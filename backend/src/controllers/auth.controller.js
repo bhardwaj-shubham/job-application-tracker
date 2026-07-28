@@ -109,4 +109,17 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
 });
 
-export { signupUser, loginUser, getCurrentUser };
+const logoutUser = asyncHandler(async (req, res) => {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  };
+
+  return res
+    .status(200)
+    .clearCookie("token", cookieOptions)
+    .json(new ApiResponse(200, {}, "User logged out successfully"));
+});
+
+export { signupUser, loginUser, getCurrentUser, logoutUser };
