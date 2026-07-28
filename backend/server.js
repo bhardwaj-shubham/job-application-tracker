@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 
 import errorHandlerMiddleware from "./src/middleware/errorHandler.middleware.js";
 import authRouter from "./src/routes/auth.route.js";
+import applicationRouter from "./src/routes/application.route.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/applications", applicationRouter);
 
 app.use(errorHandlerMiddleware);
 
