@@ -52,7 +52,7 @@ const createApplication = asyncHandler(async (req, res) => {
     );
 });
 
-const listAllApplication = asyncHandler(async (req, res) => {
+const listAllApplications = asyncHandler(async (req, res) => {
   const { page, limit, status } = req.query;
 
   const normalizedPageNo = page !== undefined ? Number(page) : 1;
@@ -122,4 +122,32 @@ const listAllApplication = asyncHandler(async (req, res) => {
     );
 });
 
-export { createApplication, listAllApplication };
+const getApplicationById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id?.trim()) {
+    throw new ApiError(400, "Invalid application ID");
+  }
+
+  const application = await prisma.application.findUnique({
+    where: { id, userId: req.user.id },
+  });
+
+  if (!application) {
+    throw new ApiError(404, "Application not found");
+  }
+
+  const { userId, ...applicationWithoutUserId } = application;
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        applicationWithoutUserId,
+        "Application fetched successfully",
+      ),
+    );
+});
+
+export { createApplication, listAllApplications, getApplicationById };
