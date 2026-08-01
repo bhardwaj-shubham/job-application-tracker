@@ -52,4 +52,74 @@ const createApplication = asyncHandler(async (req, res) => {
     );
 });
 
-export { createApplication };
+const listAllApplication = asyncHandler(async (req, res) => {
+  const { page, limit, status } = req.query;
+
+  const normalizedPageNo = page !== undefined ? Number(page) : 1;
+  const normalizedLimit = limit !== undefined ? Number(limit) : 10;
+  const normalizedStatus = status?.trim();
+
+  if (
+    page !== undefined &&
+    (!Number.isInteger(normalizedPageNo) || normalizedPageNo < 1)
+  ) {
+    throw new ApiError(400, "Invalid page number");
+  }
+
+  if (
+    limit !== undefined &&
+    (!Number.isInteger(normalizedLimit) ||
+      normalizedLimit < 1 ||
+      normalizedLimit > 100)
+  ) {
+    throw new ApiError(400, "Invalid limit");
+  }
+
+  if (
+    normalizedStatus &&
+    !Object.values(ApplicationStatus).includes(normalizedStatus)
+  ) {
+    throw new ApiError(400, "Invalid status");
+  }
+
+  const [applications, totalItems] = await Promise.all([
+    prisma.application.findMany({
+      where: {
+        userId: req.user.id,
+        ...(normalizedStatus && { status: normalizedStatus }),
+      },
+      orderBy: { createdAt: "desc" },
+      skip: (normalizedPageNo - 1) * normalizedLimit,
+      take: normalizedLimit,
+    }),
+    prisma.application.count({
+      where: {
+        userId: req.user.id,
+        ...(normalizedStatus && { status: normalizedStatus }),
+      },
+    }),
+  ]);
+
+  const applicationsWithoutUserId = applications.map(
+    ({ userId, ...rest }) => rest,
+  );
+
+  const pagination = {
+    currentPage: normalizedPageNo,
+    totalPages: Math.ceil(totalItems / normalizedLimit),
+    totalItems,
+    limit: normalizedLimit,
+  };
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { applications: applicationsWithoutUserId, pagination },
+        "All applications fetched successfully",
+      ),
+    );
+});
+
+export { createApplication, listAllApplication };
