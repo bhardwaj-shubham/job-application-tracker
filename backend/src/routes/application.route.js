@@ -3,6 +3,7 @@ import express from "express";
 import verifyToken from "../middleware/auth.middleware.js";
 import {
   createApplication,
+  deleteApplicationById,
   getApplicationById,
   listAllApplications,
   updateApplicationById,
@@ -20,6 +21,7 @@ applicationRouter.post("/", verifyToken, createApplication);
 applicationRouter.get("/", verifyToken, listAllApplications);
 applicationRouter.get("/:id", verifyToken, getApplicationById);
 applicationRouter.put("/:id", verifyToken, updateApplicationById);
+applicationRouter.delete("/:id", verifyToken, deleteApplicationById);
 
 applicationRouter.post("/:id/notes", verifyToken, createNote);
 applicationRouter.get("/:id/notes", verifyToken, listNotes);
