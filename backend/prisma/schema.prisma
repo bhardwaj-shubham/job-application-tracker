@@ -69,6 +69,8 @@ model Document {
   applicationId String
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   type          DocType     @default(RESUME)
+  filename      String
+  mimetype      String
   url           String
   publicId      String
   uploadedAt    DateTime    @default(now())
