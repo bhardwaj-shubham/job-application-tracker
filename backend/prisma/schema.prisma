@@ -71,6 +71,7 @@ model Document {
   type          DocType     @default(RESUME)
   filename      String
   mimetype      String
+  resourceType  String
   url           String
   publicId      String
   uploadedAt    DateTime    @default(now())
