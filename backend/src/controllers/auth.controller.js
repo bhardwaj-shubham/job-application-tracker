@@ -8,38 +8,22 @@ import ApiResponse from "../utils/ApiResponse.js";
 import generateToken from "../utils/generateToken.js";
 
 const signupUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body || {};
-
-  if (!name?.trim() || !email?.trim() || !password) {
-    throw new ApiError(400, "Please provide name, email, and password");
-  }
-
-  if (password.length < 8) {
-    throw new ApiError(400, "Password must be at least 8 characters long");
-  }
-
-  const normalizedName = name.trim();
-  const normalizedEmail = email.toLowerCase().trim();
-  const normalizedPassword = password.trim();
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-    throw new ApiError(400, "Please provide a valid email address");
-  }
+  const { name, email, password } = req.body;
 
   const checkUserExists = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
+    where: { email },
   });
 
   if (checkUserExists) {
     throw new ApiError(409, "User already exists");
   }
 
-  const hashedPassword = await bcrypt.hash(normalizedPassword, 12);
+  const hashedPassword = await bcrypt.hash(password, 12);
 
   const newUser = await prisma.user.create({
     data: {
-      name: normalizedName,
-      email: normalizedEmail,
+      name,
+      email,
       password: hashedPassword,
     },
   });
@@ -54,27 +38,17 @@ const signupUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body || {};
-
-  if (!email?.trim() || !password) {
-    throw new ApiError(400, "Please provide email and password");
-  }
-
-  const normalizedEmail = email.toLowerCase().trim();
-  const normalizedPassword = password.trim();
+  const { email, password } = req.body;
 
   const user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
+    where: { email },
   });
 
   if (!user) {
     throw new ApiError(401, "Invalid email or password");
   }
 
-  const isPasswordValid = await bcrypt.compare(
-    normalizedPassword,
-    user.password,
-  );
+  const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid email or password");
