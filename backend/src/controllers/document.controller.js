@@ -1,10 +1,12 @@
 import fs from "fs/promises";
+
 import { DocType } from "../../generated/prisma/enums.ts";
+import cloudinary from "../integrations/cloudinary/cloudinary.js";
+import prisma from "../config/db.js";
+
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import prisma from "../config/db.js";
-import cloudinary from "../config/cloudinary.js";
 
 const REPLACEABLE_DOCUMENT_TYPES = ["RESUME", "COVER_LETTER", "PORTFOLIO"];
 
