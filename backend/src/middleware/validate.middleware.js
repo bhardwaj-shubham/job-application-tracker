@@ -10,7 +10,10 @@ const validate =
     }
 
     req.validated ??= {};
-    req.validated[source] = result.data;
+    req.validated[source] = {
+      ...req.validated[source],
+      ...result.data,
+    };
 
     next();
   };
