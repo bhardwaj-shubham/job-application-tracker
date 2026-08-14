@@ -1,8 +1,11 @@
 import express from "express";
 
 import verifyToken from "../middleware/auth.middleware.js";
-import upload from "../middleware/multer.middleware.js";
 import validate from "../middleware/validate.middleware.js";
+
+import noteRouter from "./note.route.js";
+import documentRouter from "./document.route.js";
+
 import {
   createApplicationSchema,
   listApplicationsQuerySchema,
@@ -17,68 +20,48 @@ import {
   listAllApplications,
   updateApplicationById,
 } from "../controllers/application.controller.js";
-import {
-  createNote,
-  deleteNote,
-  listNotes,
-  updateNote,
-} from "../controllers/note.controller.js";
-import {
-  deleteDocument,
-  listDocuments,
-  uploadDocument,
-} from "../controllers/document.controller.js";
 
 const applicationRouter = express.Router();
 
+applicationRouter.use(verifyToken);
+
 applicationRouter.post(
   "/",
-  verifyToken,
   validate(createApplicationSchema),
   createApplication,
 );
 applicationRouter.get(
   "/",
-  verifyToken,
   validate(listApplicationsQuerySchema, "query"),
   listAllApplications,
 );
 applicationRouter.get(
   "/:id",
-  verifyToken,
   validate(applicationIdSchema, "params"),
   getApplicationById,
 );
 applicationRouter.patch(
   "/:id",
-  verifyToken,
   validate(applicationIdSchema, "params"),
   validate(updateApplicationSchema),
   updateApplicationById,
 );
 applicationRouter.delete(
   "/:id",
-  verifyToken,
   validate(applicationIdSchema, "params"),
   deleteApplicationById,
 );
 
-applicationRouter.post("/:id/notes", verifyToken, createNote);
-applicationRouter.get("/:id/notes", verifyToken, listNotes);
-applicationRouter.delete("/:id/notes/:noteId", verifyToken, deleteNote);
-applicationRouter.patch("/:id/notes/:noteId", verifyToken, updateNote);
-
-applicationRouter.post(
-  "/:id/documents",
-  verifyToken,
-  upload.single("file"),
-  uploadDocument,
+applicationRouter.use(
+  "/:id/notes",
+  validate(applicationIdSchema, "params"),
+  noteRouter,
 );
-applicationRouter.get("/:id/documents", verifyToken, listDocuments);
-applicationRouter.delete(
-  "/:id/documents/:documentId",
-  verifyToken,
-  deleteDocument,
+
+applicationRouter.use(
+  "/:id/documents",
+  validate(applicationIdSchema, "params"),
+  documentRouter,
 );
 
 export default applicationRouter;

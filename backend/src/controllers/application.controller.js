@@ -80,10 +80,10 @@ const listAllApplications = asyncHandler(async (req, res) => {
 });
 
 const getApplicationById = asyncHandler(async (req, res) => {
-  const { id } = req.validated.params;
+  const { id: applicatedId } = req.validated.params;
 
   const application = await prisma.application.findFirst({
-    where: { id, userId: req.user.id },
+    where: { id: applicatedId, userId: req.user.id },
     include: {
       notes: {
         orderBy: { createdAt: "desc" },
@@ -109,12 +109,12 @@ const getApplicationById = asyncHandler(async (req, res) => {
 });
 
 const updateApplicationById = asyncHandler(async (req, res) => {
-  const { id } = req.validated.params;
+  const { id: applicationId } = req.validated.params;
   const { company, role, jobUrl, status, appliedDate, jobDescription } =
     req.validated.body;
 
   const existingApplication = await prisma.application.findFirst({
-    where: { id, userId: req.user.id },
+    where: { id: applicationId, userId: req.user.id },
   });
 
   if (!existingApplication) {
@@ -139,14 +139,14 @@ const updateApplicationById = asyncHandler(async (req, res) => {
 
   const [updatedApplication] = await prisma.$transaction([
     prisma.application.update({
-      where: { id },
+      where: { id: applicationId },
       data: updateData,
     }),
     ...(statusChanged
       ? [
           prisma.statusHistory.create({
             data: {
-              applicationId: id,
+              applicationId,
               status,
             },
           }),
@@ -168,10 +168,10 @@ const updateApplicationById = asyncHandler(async (req, res) => {
 });
 
 const deleteApplicationById = asyncHandler(async (req, res) => {
-  const { id } = req.validated.params;
+  const { id: applicationId } = req.validated.params;
 
   const existingApplication = await prisma.application.findFirst({
-    where: { id, userId: req.user.id },
+    where: { id: applicationId, userId: req.user.id },
   });
 
   if (!existingApplication) {
@@ -179,7 +179,7 @@ const deleteApplicationById = asyncHandler(async (req, res) => {
   }
 
   await prisma.application.delete({
-    where: { id },
+    where: { id: applicationId },
   });
 
   return res
