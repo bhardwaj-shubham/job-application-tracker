@@ -1,6 +1,15 @@
 import express from "express";
 
 import verifyToken from "../middleware/auth.middleware.js";
+import upload from "../middleware/multer.middleware.js";
+import validate from "../middleware/validate.middleware.js";
+import {
+  createApplicationSchema,
+  listApplicationsQuerySchema,
+  applicationIdSchema,
+  updateApplicationSchema,
+} from "../validators/application.validator.js";
+
 import {
   createApplication,
   deleteApplicationById,
@@ -19,15 +28,40 @@ import {
   listDocuments,
   uploadDocument,
 } from "../controllers/document.controller.js";
-import upload from "../middleware/multer.middleware.js";
 
 const applicationRouter = express.Router();
 
-applicationRouter.post("/", verifyToken, createApplication);
-applicationRouter.get("/", verifyToken, listAllApplications);
-applicationRouter.get("/:id", verifyToken, getApplicationById);
-applicationRouter.put("/:id", verifyToken, updateApplicationById);
-applicationRouter.delete("/:id", verifyToken, deleteApplicationById);
+applicationRouter.post(
+  "/",
+  verifyToken,
+  validate(createApplicationSchema),
+  createApplication,
+);
+applicationRouter.get(
+  "/",
+  verifyToken,
+  validate(listApplicationsQuerySchema, "query"),
+  listAllApplications,
+);
+applicationRouter.get(
+  "/:id",
+  verifyToken,
+  validate(applicationIdSchema, "params"),
+  getApplicationById,
+);
+applicationRouter.patch(
+  "/:id",
+  verifyToken,
+  validate(applicationIdSchema, "params"),
+  validate(updateApplicationSchema),
+  updateApplicationById,
+);
+applicationRouter.delete(
+  "/:id",
+  verifyToken,
+  validate(applicationIdSchema, "params"),
+  deleteApplicationById,
+);
 
 applicationRouter.post("/:id/notes", verifyToken, createNote);
 applicationRouter.get("/:id/notes", verifyToken, listNotes);

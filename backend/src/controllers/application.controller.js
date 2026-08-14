@@ -8,32 +8,16 @@ import { ApplicationStatus } from "../../generated/prisma/enums.ts";
 
 const createApplication = asyncHandler(async (req, res) => {
   const { company, role, jobUrl, status, appliedDate, jobDescription } =
-    req.body || {};
-
-  if (!company?.trim() || !role?.trim()) {
-    throw new ApiError(400, "Please provide company and role");
-  }
-
-  if (status && !Object.values(ApplicationStatus).includes(status)) {
-    throw new ApiError(400, "Invalid application status");
-  }
-
-  const normalizedAppliedDate = appliedDate?.trim()
-    ? new Date(appliedDate.trim())
-    : new Date();
-
-  if (isNaN(normalizedAppliedDate.getTime())) {
-    throw new ApiError(400, "Invalid appliedDate format");
-  }
+    req.validated.body;
 
   const newApplication = await prisma.application.create({
     data: {
-      company: company.trim(),
-      role: role.trim(),
-      jobUrl: jobUrl?.trim() || null,
-      status: status?.trim() || ApplicationStatus.APPLIED,
-      appliedDate: normalizedAppliedDate,
-      jobDescription: jobDescription?.trim() || null,
+      company,
+      role,
+      jobUrl: jobUrl || null,
+      status: status || ApplicationStatus.APPLIED,
+      appliedDate: appliedDate || new Date(),
+      jobDescription: jobDescription || null,
       userId: req.user.id,
     },
   });
@@ -52,49 +36,23 @@ const createApplication = asyncHandler(async (req, res) => {
 });
 
 const listAllApplications = asyncHandler(async (req, res) => {
-  const { page, limit, status } = req.query;
-
-  const normalizedPageNo = page !== undefined ? Number(page) : 1;
-  const normalizedLimit = limit !== undefined ? Number(limit) : 10;
-  const normalizedStatus = status?.trim();
-
-  if (
-    page !== undefined &&
-    (!Number.isInteger(normalizedPageNo) || normalizedPageNo < 1)
-  ) {
-    throw new ApiError(400, "Invalid page number");
-  }
-
-  if (
-    limit !== undefined &&
-    (!Number.isInteger(normalizedLimit) ||
-      normalizedLimit < 1 ||
-      normalizedLimit > 100)
-  ) {
-    throw new ApiError(400, "Invalid limit");
-  }
-
-  if (
-    normalizedStatus &&
-    !Object.values(ApplicationStatus).includes(normalizedStatus)
-  ) {
-    throw new ApiError(400, "Invalid status");
-  }
+  const { page, limit, status } = req.validated.query;
 
   const [applications, totalItems] = await Promise.all([
     prisma.application.findMany({
       where: {
         userId: req.user.id,
-        ...(normalizedStatus && { status: normalizedStatus }),
+        ...(status && { status }),
       },
       orderBy: { createdAt: "desc" },
-      skip: (normalizedPageNo - 1) * normalizedLimit,
-      take: normalizedLimit,
+      skip: (page - 1) * limit,
+      take: limit,
     }),
+
     prisma.application.count({
       where: {
         userId: req.user.id,
-        ...(normalizedStatus && { status: normalizedStatus }),
+        ...(status && { status }),
       },
     }),
   ]);
@@ -104,10 +62,10 @@ const listAllApplications = asyncHandler(async (req, res) => {
   );
 
   const pagination = {
-    currentPage: normalizedPageNo,
-    totalPages: Math.ceil(totalItems / normalizedLimit),
+    currentPage: page,
+    totalPages: Math.ceil(totalItems / limit),
     totalItems,
-    limit: normalizedLimit,
+    limit,
   };
 
   return res
@@ -122,11 +80,7 @@ const listAllApplications = asyncHandler(async (req, res) => {
 });
 
 const getApplicationById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-
-  if (!id?.trim()) {
-    throw new ApiError(400, "Invalid application ID");
-  }
+  const { id } = req.validated.params;
 
   const application = await prisma.application.findFirst({
     where: { id, userId: req.user.id },
@@ -155,13 +109,9 @@ const getApplicationById = asyncHandler(async (req, res) => {
 });
 
 const updateApplicationById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.validated.params;
   const { company, role, jobUrl, status, appliedDate, jobDescription } =
-    req.body || {};
-
-  if (!id?.trim()) {
-    throw new ApiError(400, "Invalid application ID");
-  }
+    req.validated.body;
 
   const existingApplication = await prisma.application.findFirst({
     where: { id, userId: req.user.id },
@@ -171,37 +121,19 @@ const updateApplicationById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Application not found");
   }
 
-  let normalizedAppliedDate;
-  if (appliedDate !== undefined) {
-    normalizedAppliedDate = new Date(appliedDate?.trim());
-    if (isNaN(normalizedAppliedDate.getTime())) {
-      throw new ApiError(400, "Invalid appliedDate format");
-    }
-  }
-
   const updateData = {
-    ...(company !== undefined && { company: company?.trim() }),
-    ...(role !== undefined && { role: role?.trim() }),
-    ...(jobUrl !== undefined && { jobUrl: jobUrl?.trim() || null }),
+    ...(company !== undefined && { company }),
+    ...(role !== undefined && { role }),
+    ...(jobUrl !== undefined && { jobUrl: jobUrl || null }),
     ...(status !== undefined && { status }),
-    ...(normalizedAppliedDate !== undefined && {
-      appliedDate: normalizedAppliedDate,
+    ...(appliedDate !== undefined && {
+      appliedDate,
     }),
     ...(jobDescription !== undefined && {
-      jobDescription: jobDescription?.trim() || null,
+      jobDescription: jobDescription || null,
     }),
   };
 
-  if (Object.keys(updateData).length === 0) {
-    throw new ApiError(400, "Please provide at least one field to update");
-  }
-
-  if (
-    status !== undefined &&
-    !Object.values(ApplicationStatus).includes(status)
-  ) {
-    throw new ApiError(400, "Invalid application status");
-  }
   const statusChanged =
     status !== undefined && status !== existingApplication.status;
 
@@ -236,11 +168,7 @@ const updateApplicationById = asyncHandler(async (req, res) => {
 });
 
 const deleteApplicationById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-
-  if (!id?.trim()) {
-    throw new ApiError(400, "Invalid application ID");
-  }
+  const { id } = req.validated.params;
 
   const existingApplication = await prisma.application.findFirst({
     where: { id, userId: req.user.id },
