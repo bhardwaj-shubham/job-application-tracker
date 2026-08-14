@@ -8,7 +8,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import generateToken from "../utils/generateToken.js";
 
 const signupUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password } = req.validated.body;
 
   const checkUserExists = await prisma.user.findUnique({
     where: { email },
@@ -38,7 +38,7 @@ const signupUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.validated.body;
 
   const user = await prisma.user.findUnique({
     where: { email },

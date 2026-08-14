@@ -9,7 +9,9 @@ const validate =
       throw new ApiError(400, "Validation failed", result.error.issues);
     }
 
-    req[source] = result.data;
+    req.validated ??= {};
+    req.validated[source] = result.data;
+
     next();
   };
 
