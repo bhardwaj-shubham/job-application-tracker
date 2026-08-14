@@ -4,12 +4,8 @@ import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 const createNote = asyncHandler(async (req, res) => {
-  const { id: applicationId } = req.params;
-  const { content } = req.body || {};
-
-  if (!content?.trim()) {
-    throw new ApiError(400, "Note content is required");
-  }
+  const { id: applicationId } = req.validated.params;
+  const { content } = req.validated.body;
 
   const application = await prisma.application.findFirst({
     where: { id: applicationId, userId: req.user.id },
@@ -20,7 +16,7 @@ const createNote = asyncHandler(async (req, res) => {
   }
 
   const note = await prisma.note.create({
-    data: { applicationId, content: content.trim() },
+    data: { applicationId, content },
   });
 
   return res
@@ -29,7 +25,7 @@ const createNote = asyncHandler(async (req, res) => {
 });
 
 const listNotes = asyncHandler(async (req, res) => {
-  const { id: applicationId } = req.params;
+  const { id: applicationId } = req.validated.params;
 
   const application = await prisma.application.findFirst({
     where: { id: applicationId, userId: req.user.id },
@@ -50,7 +46,7 @@ const listNotes = asyncHandler(async (req, res) => {
 });
 
 const deleteNote = asyncHandler(async (req, res) => {
-  const { id: applicationId, noteId } = req.params;
+  const { id: applicationId, noteId } = req.validated.params;
 
   const application = await prisma.application.findFirst({
     where: { id: applicationId, userId: req.user.id },
@@ -78,12 +74,9 @@ const deleteNote = asyncHandler(async (req, res) => {
 });
 
 const updateNote = asyncHandler(async (req, res) => {
-  const { id: applicationId, noteId } = req.params;
-  const { content } = req.body || {};
+  const { id: applicationId, noteId } = req.validated.params;
 
-  if (!content?.trim()) {
-    throw new ApiError(400, "Note content is required");
-  }
+  const { content } = req.validated.body;
 
   const application = await prisma.application.findFirst({
     where: { id: applicationId, userId: req.user.id },
@@ -103,7 +96,7 @@ const updateNote = asyncHandler(async (req, res) => {
 
   const updatedNote = await prisma.note.update({
     where: { id: noteId },
-    data: { content: content.trim() },
+    data: { content },
   });
 
   return res
