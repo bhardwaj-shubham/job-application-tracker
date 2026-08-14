@@ -3,6 +3,8 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 
+import ApiError from "../utils/ApiError.js";
+
 const tempDir = path.join(process.cwd(), "public", "temp");
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });
@@ -40,4 +42,22 @@ const upload = multer({
   fileFilter,
 });
 
-export default upload;
+const handleMulterMiddleware = (uploadMiddleware) => (req, res, next) => {
+  uploadMiddleware(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return next(new ApiError(400, err.message));
+    }
+
+    if (err) {
+      return next(new ApiError(400, err.message || "File upload failed"));
+    }
+
+    if (!req.file) {
+      return next(new ApiError(400, "Please upload a file"));
+    }
+
+    next();
+  });
+};
+
+export { upload, handleMulterMiddleware };
