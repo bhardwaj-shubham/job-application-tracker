@@ -1,9 +1,6 @@
 import express from "express";
 
-import {
-  upload,
-  handleMulterMiddleware,
-} from "../middleware/multer.middleware.js";
+import { upload, handleMulterUpload } from "../middleware/multer.middleware.js";
 import validate from "../middleware/validate.middleware.js";
 
 import {
@@ -20,7 +17,7 @@ const documentRouter = express.Router();
 
 documentRouter.post(
   "/",
-  handleMulterMiddleware(upload.single("file")),
+  handleMulterUpload(upload.single("file")),
   validate(uploadDocumentSchema),
   uploadDocument,
 );

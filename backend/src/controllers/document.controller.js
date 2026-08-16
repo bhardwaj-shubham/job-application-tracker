@@ -1,8 +1,4 @@
-import fs from "fs/promises";
-
-import { DocType } from "../../generated/prisma/enums.ts";
-import cloudinary from "../integrations/cloudinary/cloudinary.js";
-import prisma from "../config/db.js";
+import * as documentService from "../services/document.service.js";
 
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
@@ -14,84 +10,42 @@ const uploadDocument = asyncHandler(async (req, res) => {
   const { id: applicationId } = req.validated.params;
   const { type } = req.validated.body;
 
-  const application = await prisma.application.findFirst({
-    where: { id: applicationId, userId: req.user.id },
+  const result = await documentService.uploadDocument({
+    applicationId,
+    userId: req.user.id,
+    file: req.file,
+    type,
   });
 
-  if (!application) {
-    await fs.unlink(req.file.path).catch(() => {});
+  if (result.applicationNotFound) {
     throw new ApiError(404, "Application not found");
   }
 
-  let uploadedFile;
-
-  try {
-    uploadedFile = await cloudinary.uploader.upload(req.file.path, {
-      folder: `job-tracker/${req.user.id}/${applicationId}`,
-      resource_type: "auto",
-    });
-  } catch (error) {
-    throw new ApiError(500, "Failed to upload file to cloudinary");
-  } finally {
-    await fs.unlink(req.file.path).catch(() => {});
-  }
-
-  let existingDocument;
-  if (REPLACEABLE_DOCUMENT_TYPES.includes(type)) {
-    existingDocument = await prisma.document.findFirst({
-      where: { applicationId, type },
-    });
-  }
-
-  const document = await prisma.document.create({
-    data: {
-      applicationId,
-      type,
-      filename: req.file.originalname,
-      mimetype: req.file.mimetype,
-      resourceType: uploadedFile.resource_type,
-      url: uploadedFile.secure_url,
-      publicId: uploadedFile.public_id,
-    },
-  });
-
-  if (existingDocument) {
-    await prisma.document.delete({
-      where: { id: existingDocument.id },
-    });
-
-    await cloudinary.uploader
-      .destroy(existingDocument.publicId, {
-        resource_type: existingDocument.resourceType,
-      })
-      .catch((err) => {
-        console.error("Error deleting file from cloudinary:", err);
-      });
+  if (result.invalidFileType) {
+    throw new ApiError(
+      400,
+      "File content does not match an allowed document type",
+    );
   }
 
   return res
     .status(201)
-    .json(new ApiResponse(201, document, "Document uploaded successfully"));
+    .json(
+      new ApiResponse(201, result.document, "Document uploaded successfully"),
+    );
 });
 
 const listDocuments = asyncHandler(async (req, res) => {
   const { id: applicationId } = req.validated.params;
 
-  const application = await prisma.application.findFirst({
-    where: {
-      id: applicationId,
-      userId: req.user.id,
-    },
+  const documents = await documentService.listDocuments({
+    applicationId,
+    userId: req.user.id,
   });
 
-  if (!application) {
+  if (documents === null) {
     throw new ApiError(404, "Application not found");
   }
-
-  const documents = await prisma.document.findMany({
-    where: { applicationId },
-    orderBy: { uploadedAt: "desc" },
-  });
 
   return res
     .status(200)
@@ -101,37 +55,19 @@ const listDocuments = asyncHandler(async (req, res) => {
 const deleteDocument = asyncHandler(async (req, res) => {
   const { id: applicationId, documentId } = req.validated.params;
 
-  const application = await prisma.application.findFirst({
-    where: {
-      id: applicationId,
-      userId: req.user.id,
-    },
-    select: { id: true },
+  const result = await documentService.deleteDocument({
+    applicationId,
+    userId: req.user.id,
+    documentId,
   });
 
-  if (!application) {
+  if (result.applicationNotFound) {
     throw new ApiError(404, "Application not found");
   }
 
-  const document = await prisma.document.findFirst({
-    where: { id: documentId, applicationId },
-  });
-
-  if (!document) {
+  if (result.documentNotFound) {
     throw new ApiError(404, "Document not found");
   }
-
-  await prisma.document.delete({
-    where: { id: documentId },
-  });
-
-  await cloudinary.uploader
-    .destroy(document.publicId, {
-      resource_type: document.resourceType,
-    })
-    .catch((err) => {
-      console.error("Error deleting file from cloudinary:", err);
-    });
 
   return res
     .status(200)
