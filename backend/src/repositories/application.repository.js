@@ -6,7 +6,7 @@ const create = (data) => {
   });
 };
 
-const findById = (id, userId, { includeNotes = false }) => {
+const findById = (id, userId, { includeNotes = false } = {}) => {
   return prisma.application.findFirst({
     where: {
       id,
