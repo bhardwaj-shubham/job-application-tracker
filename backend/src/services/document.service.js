@@ -32,8 +32,6 @@ const uploadDocument = async ({ applicationId, userId, file, type }) => {
     format: fileExtension,
   });
 
-  console.log("Full upload response:", JSON.stringify(uploadedFile, null, 2));
-
   let exisitingDocument = null;
   if (REPLACEABLE_DOCUMENT_TYPES.includes(type)) {
     exisitingDocument = await documentRepository.findByApplicationByType(
@@ -90,16 +88,9 @@ const deleteDocument = async ({ applicationId, userId, documentId }) => {
 
   await documentRepository.deleteById(documentId);
 
-  // FIXME: remove console.logs after testing
-  const result = await cloudinaryService
+  await cloudinaryService
     .deleteAsset(document.publicId, document.resourceType)
     .catch((err) => console.error("Error deleting file from cloudinary:", err));
-
-  console.log("Cloudinary delete result", result);
-
-  if (!result || result.result !== "ok") {
-    console.error("Cloudinary did not confirm deletion:", deleteResult);
-  }
 
   return { success: true };
 };
