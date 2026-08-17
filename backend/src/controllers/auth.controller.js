@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import ms from "ms";
 
 import prisma from "../config/db.js";
+import ERROR_CODES from "../constants/errorCodes.js";
+
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
@@ -15,7 +17,12 @@ const signupUser = asyncHandler(async (req, res) => {
   });
 
   if (checkUserExists) {
-    throw new ApiError(409, "User already exists");
+    throw new ApiError(
+      409,
+      "User already exists",
+      [],
+      ERROR_CODES.EMAIL_ALREADY_EXISTS,
+    );
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -45,13 +52,23 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    throw new ApiError(401, "Invalid email or password");
+    throw new ApiError(
+      401,
+      "Invalid email or password",
+      [],
+      ERROR_CODES.INVALID_CREDENTIALS,
+    );
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid email or password");
+    throw new ApiError(
+      401,
+      "Invalid email or password",
+      [],
+      ERROR_CODES.INVALID_CREDENTIALS,
+    );
   }
 
   const token = generateToken(user.id);

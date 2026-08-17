@@ -1,5 +1,7 @@
 import { ApplicationStatus } from "../../generated/prisma/enums.ts";
 
+import ERROR_CODES from "../constants/errorCodes.js";
+
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -56,7 +58,12 @@ const getApplicationById = asyncHandler(async (req, res) => {
   });
 
   if (!application) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   const { userId, ...applicationWithoutUserId } = application;
@@ -82,7 +89,12 @@ const updateApplicationById = asyncHandler(async (req, res) => {
   });
 
   if (!application) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   const { userId, ...applicationWithoutUserId } = application;
@@ -107,7 +119,12 @@ const deleteApplicationById = asyncHandler(async (req, res) => {
   });
 
   if (!application) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   return res

@@ -1,8 +1,10 @@
-import * as documentService from "../services/document.service.js";
+import ERROR_CODES from "../constants/errorCodes.js";
 
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
+
+import * as documentService from "../services/document.service.js";
 
 const REPLACEABLE_DOCUMENT_TYPES = ["RESUME", "COVER_LETTER", "PORTFOLIO"];
 
@@ -18,13 +20,20 @@ const uploadDocument = asyncHandler(async (req, res) => {
   });
 
   if (result.applicationNotFound) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   if (result.invalidFileType) {
     throw new ApiError(
       400,
       "File content does not match an allowed document type",
+      [],
+      ERROR_CODES.INVALID_FILE_TYPE,
     );
   }
 
@@ -44,7 +53,12 @@ const listDocuments = asyncHandler(async (req, res) => {
   });
 
   if (documents === null) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   return res
@@ -62,11 +76,21 @@ const deleteDocument = asyncHandler(async (req, res) => {
   });
 
   if (result.applicationNotFound) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   if (result.documentNotFound) {
-    throw new ApiError(404, "Document not found");
+    throw new ApiError(
+      404,
+      "Document not found",
+      [],
+      ERROR_CODES.DOCUMENT_NOT_FOUND,
+    );
   }
 
   return res

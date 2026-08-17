@@ -1,7 +1,10 @@
 import prisma from "../config/db.js";
+import ERROR_CODES from "../constants/errorCodes.js";
+
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
+
 import * as noteService from "../services/note.service.js";
 
 const createNote = asyncHandler(async (req, res) => {
@@ -15,7 +18,12 @@ const createNote = asyncHandler(async (req, res) => {
   });
 
   if (!note) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   return res
@@ -32,7 +40,12 @@ const listNotes = asyncHandler(async (req, res) => {
   });
 
   if (notes === null) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   return res
@@ -50,11 +63,16 @@ const deleteNote = asyncHandler(async (req, res) => {
   });
 
   if (result.applicationNotFound) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   if (result.noteNotFound) {
-    throw new ApiError(404, "Note not found");
+    throw new ApiError(404, "Note not found", [], ERROR_CODES.NOTE_NOT_FOUND);
   }
 
   return res
@@ -74,11 +92,16 @@ const updateNote = asyncHandler(async (req, res) => {
   });
 
   if (result.applicationNotFound) {
-    throw new ApiError(404, "Application not found");
+    throw new ApiError(
+      404,
+      "Application not found",
+      [],
+      ERROR_CODES.APPLICATION_NOT_FOUND,
+    );
   }
 
   if (result.noteNotFound) {
-    throw new ApiError(404, "Note not found");
+    throw new ApiError(404, "Note not found", [], ERROR_CODES.NOTE_NOT_FOUND);
   }
 
   return res

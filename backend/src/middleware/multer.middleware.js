@@ -1,4 +1,6 @@
 import multer from "multer";
+
+import ERROR_CODES from "../constants/errorCodes.js";
 import ApiError from "../utils/ApiError.js";
 
 const storage = multer.memoryStorage();
@@ -11,15 +13,31 @@ const upload = multer({
 const handleMulterUpload = (uploadMiddleware) => (req, res, next) => {
   uploadMiddleware(req, res, (err) => {
     if (err instanceof multer.MulterError) {
-      return next(new ApiError(400, err.message));
+      return next(
+        new ApiError(400, err.message, [], ERROR_CODES.VALIDATION_ERROR),
+      );
     }
 
     if (err) {
-      return next(new ApiError(400, err.message || "File upload failed"));
+      return next(
+        new ApiError(
+          400,
+          err.message || "File upload failed",
+          [],
+          ERROR_CODES.VALIDATION_ERROR,
+        ),
+      );
     }
 
     if (!req.file) {
-      return next(new ApiError(400, "Please upload a file"));
+      return next(
+        new ApiError(
+          400,
+          "Please upload a file",
+          [],
+          ERROR_CODES.VALIDATION_ERROR,
+        ),
+      );
     }
 
     next();

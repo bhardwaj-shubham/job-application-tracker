@@ -1,3 +1,4 @@
+import ERROR_CODES from "../constants/errorCodes.js";
 import ApiError from "../utils/ApiError.js";
 
 const validate =
@@ -6,7 +7,12 @@ const validate =
     const result = schema.safeParse(req[source]);
 
     if (!result.success) {
-      throw new ApiError(400, "Validation failed", result.error.issues);
+      throw new ApiError(
+        400,
+        "Validation failed",
+        result.error.issues,
+        ERROR_CODES.VALIDATION_ERROR,
+      );
     }
 
     req.validated ??= {};
