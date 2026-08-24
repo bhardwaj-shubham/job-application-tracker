@@ -22,10 +22,9 @@ import {
 } from "../controllers/application.controller.js";
 
 import {
-  extractSkills,
-  getSkillExtractionStatus,
-} from "../controllers/skillExtraction.controller.js";
-import { skillExtractionJobSchema } from "../validators/job.validator.js";
+  analyzeResume,
+  getResumeAnalysisStatus,
+} from "../controllers/resumeAnalysis.controller.js";
 
 const applicationRouter = express.Router();
 
@@ -58,14 +57,14 @@ applicationRouter.delete(
   deleteApplicationById,
 );
 applicationRouter.post(
-  "/:id/extract-skills",
+  "/:id/analyze",
   validate(applicationIdSchema, "params"),
-  extractSkills,
+  analyzeResume,
 );
 applicationRouter.get(
-  "/:id/extract-skills/:jobId",
-  validate(skillExtractionJobSchema, "params"),
-  getSkillExtractionStatus,
+  "/:id/analyze",
+  validate(applicationIdSchema, "params"),
+  getResumeAnalysisStatus,
 );
 
 applicationRouter.use(
