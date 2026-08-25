@@ -1,11 +1,12 @@
+import { ZodError } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
 import gemini from "./gemini.js";
+import { geminiThrottle } from "./gemini-throttle.js";
 import { resumeAnalysisSchema } from "./schemas/resume-analysis.schema.js";
 
 import ApiError from "../../utils/ApiError.js";
 import ERROR_CODES from "../../constants/errorCodes.js";
-import { ZodError } from "zod";
 
 const MODEL = "gemini-3.6-flash";
 const PROMPT_VERSION = "v1";
@@ -69,6 +70,8 @@ Rules:
 - Do not add extra fields.`;
 
   try {
+    await geminiThrottle.wait();
+
     const response = await gemini.models.generateContent({
       model: MODEL,
       contents: prompt,
