@@ -12,6 +12,16 @@ const analyzeResume = asyncHandler(async (req, res) => {
     userId: req.user.id,
   });
 
+  // reached the user's request API limit
+  if (result.rateLimited) {
+    throw new ApiError(
+      429,
+      "Resume analysis rate limit exceeded. Try again later.",
+      [],
+      ERROR_CODES.RESUME_ANALYSIS_RATE_LIMITED,
+    );
+  }
+
   if (result.applicationNotFound) {
     throw new ApiError(
       404,

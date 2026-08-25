@@ -7,6 +7,8 @@ import resumeAnalysisQueue from "../queues/resumeAnalysis.queue.js";
 import * as applicationRepository from "../repositories/application.repository.js";
 import * as resumeAnalysisRepository from "../repositories/resumeAnalysis.repository.js";
 
+import { resumeAnalysisRateLimit } from "../middleware/rate-limit/resumeAnalysisRateLimit.middleware.js";
+
 const verifyApplicationOwnership = async (applicationId, userId) => {
   return applicationRepository.findByIdWithDocuments(applicationId, userId);
 };
@@ -37,6 +39,13 @@ const enqueueResumeAnalysis = async ({ applicationId, userId }) => {
     return {
       alreadyProcessing: true,
       analysisId: exisitingAnalysis.id,
+    };
+  }
+
+  // rate limitng only updated when job processing
+  if (!resumeAnalysisRateLimit) {
+    return {
+      rateLimited: true,
     };
   }
 
@@ -86,7 +95,7 @@ const getAnalysisStatus = async ({ applicationId, userId }) => {
         matchingSkills: analysis.matchingSkills,
         missingSkills: analysis.missingSkills,
         relevantExperience: analysis.relevantExperience,
-        resumeImprovement: analysis.resumeImprovements,
+        resumeImprovements: analysis.resumeImprovements,
         keywordSuggestions: analysis.keywordSuggestions,
         strengths: analysis.strengths,
         concerns: analysis.concerns,
