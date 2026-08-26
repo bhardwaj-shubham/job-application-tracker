@@ -1,10 +1,15 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, afterEach, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../../src/app.js";
 import prisma from "../../src/config/db.js";
+import resetRateLimits from "../helpers/resetRateLimits.js";
 
 describe("Auth endpoints", () => {
   let createdUserIds = [];
+
+  beforeEach(async () => {
+    await resetRateLimits();
+  });
 
   afterEach(async () => {
     for (const id of createdUserIds) {
