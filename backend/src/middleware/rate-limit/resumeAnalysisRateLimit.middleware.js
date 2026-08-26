@@ -1,10 +1,12 @@
-import createRateLimiter from "./rateLimit.middleware.js";
+import { consumeRateLimit } from "./rateLimit.middleware.js";
 
-const resumeAnalysisRateLimit = createRateLimiter({
-  keyPrefix: `resume-analysis`,
-  maxRequests: 5,
-  windowSeconds: 60 * 60,
-  keyGenerator: (req) => req.user.id,
-});
+const resumeAnalysisRateLimit = (userId) => {
+  consumeRateLimit({
+    keyPrefix: "resume-analysis",
+    identifier: userId,
+    maxRequests: 5,
+    windowSeconds: 60 * 60,
+  });
+};
 
 export { resumeAnalysisRateLimit };

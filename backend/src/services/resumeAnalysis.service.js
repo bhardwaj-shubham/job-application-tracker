@@ -32,25 +32,26 @@ const enqueueResumeAnalysis = async ({ applicationId, userId }) => {
     return { resumeNotFound: true };
   }
 
-  const exisitingAnalysis =
+  const existingAnalysis =
     await resumeAnalysisRepository.findByApplicationId(applicationId);
 
-  if (exisitingAnalysis?.status === "PROCESSING") {
+  if (existingAnalysis?.status === "PROCESSING") {
     return {
       alreadyProcessing: true,
-      analysisId: exisitingAnalysis.id,
+      analysisId: existingAnalysis.id,
     };
   }
 
-  // rate limitng only updated when job processing
-  if (!resumeAnalysisRateLimit) {
+  const quota = await resumeAnalysisRateLimit(userId);
+
+  if (!quota.allowed) {
     return {
       rateLimited: true,
     };
   }
 
-  const analysis = exisitingAnalysis
-    ? await resumeAnalysisRepository.updateToPending(exisitingAnalysis.id)
+  const analysis = existingAnalysis
+    ? await resumeAnalysisRepository.updateToPending(existingAnalysis.id)
     : await resumeAnalysisRepository.create(
         applicationId,
         MODEL,
