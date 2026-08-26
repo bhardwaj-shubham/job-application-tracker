@@ -6,12 +6,15 @@ import ApplicationsPage from "./pages/ApplicationsPage";
 import CreateApplicationPage from "./pages/CreateApplicationPage";
 import ApplicationDetailsPage from "./pages/ApplicationDetailsPage";
 import AppLayout from "./layouts/AppLayout";
+import AuthLayout from "./layouts/AuthLayout";
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+      </Route>
 
       <Route path="/app" element={<AppLayout />}>
         <Route path="dashboard" element={<DashboardPage />} />
