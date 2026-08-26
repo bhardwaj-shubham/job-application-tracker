@@ -40,8 +40,9 @@ model Application {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
-  documents     Document[]
-  statusHistory StatusHistory[]
+  documents      Document[]
+  statusHistory  StatusHistory[]
+  resumeAnalysis ResumeAnalysis?
 
   @@index([userId])
 }
@@ -87,4 +88,37 @@ model StatusHistory {
   changedAt     DateTime          @default(now())
 
   @@index([applicationId])
+}
+
+model ResumeAnalysis {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  matchScore         Int?
+  summary            String?
+  matchingSkills     Json?
+  missingSkills      Json?
+  relevantExperience Json?
+  resumeImprovements Json?
+  keywordSuggestions Json?
+  strengths          Json?
+  concerns           Json?
+
+  model         String
+  promptVersion String
+  status        AnalysisStatus @default(PENDING)
+
+  errorCode    String?
+  errorMessage String?
+
+  applicationId String      @unique
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+}
+
+enum AnalysisStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
 }

@@ -6,8 +6,6 @@ import ApiResponse from "../utils/ApiResponse.js";
 
 import * as documentService from "../services/document.service.js";
 
-const REPLACEABLE_DOCUMENT_TYPES = ["RESUME", "COVER_LETTER", "PORTFOLIO"];
-
 const uploadDocument = asyncHandler(async (req, res) => {
   const { id: applicationId } = req.validated.params;
   const { type } = req.validated.body;

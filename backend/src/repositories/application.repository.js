@@ -24,6 +24,22 @@ const findById = (id, userId, { includeNotes = false } = {}) => {
   });
 };
 
+const findByIdWithDocuments = (id, userId) => {
+  return prisma.application.findFirst({
+    where: {
+      id,
+      userId,
+    },
+    include: {
+      documents: {
+        orderBy: {
+          uploadedAt: "desc",
+        },
+      },
+    },
+  });
+};
+
 const findMany = ({ userId, status, skip, take }) => {
   return prisma.application.findMany({
     where: {
@@ -83,6 +99,7 @@ const updateWithStatusHistory = async ({
 export {
   create,
   findById,
+  findByIdWithDocuments,
   findMany,
   count,
   deleteById,

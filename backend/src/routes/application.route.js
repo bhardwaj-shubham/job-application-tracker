@@ -21,6 +21,11 @@ import {
   updateApplicationById,
 } from "../controllers/application.controller.js";
 
+import {
+  analyzeResume,
+  getResumeAnalysisStatus,
+} from "../controllers/resumeAnalysis.controller.js";
+
 const applicationRouter = express.Router();
 
 applicationRouter.use(verifyToken);
@@ -50,6 +55,16 @@ applicationRouter.delete(
   "/:id",
   validate(applicationIdSchema, "params"),
   deleteApplicationById,
+);
+applicationRouter.post(
+  "/:id/analyze",
+  validate(applicationIdSchema, "params"),
+  analyzeResume,
+);
+applicationRouter.get(
+  "/:id/analyze",
+  validate(applicationIdSchema, "params"),
+  getResumeAnalysisStatus,
 );
 
 applicationRouter.use(
