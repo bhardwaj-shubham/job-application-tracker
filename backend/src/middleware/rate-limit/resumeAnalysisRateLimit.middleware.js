@@ -1,7 +1,7 @@
 import { consumeRateLimit } from "./rateLimit.middleware.js";
 
 const resumeAnalysisRateLimit = (userId) => {
-  consumeRateLimit({
+  return consumeRateLimit({
     keyPrefix: "resume-analysis",
     identifier: userId,
     maxRequests: 5,
