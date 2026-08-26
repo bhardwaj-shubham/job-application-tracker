@@ -1,4 +1,5 @@
 import { Link, Outlet } from "react-router";
+import "../App.css";
 
 const AppLayout = () => {
   return (
