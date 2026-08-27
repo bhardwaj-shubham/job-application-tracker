@@ -1,15 +1,56 @@
-import { Link } from "react-router";
-import FormField from "../components/forms/FormField";
 import React, { useState } from "react";
+import { Link } from "react-router";
+
+import { loginSchema } from "../schemas/auth";
+import { getFormErrors } from "../utils/formErrors";
+
+import FormField from "../components/forms/FormField";
+
+type LoginErrors = {
+  email?: string;
+  password?: string;
+};
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [errors, setErrors] = useState<LoginErrors>({});
+
   const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    console.log(email, password);
+    const result = loginSchema.safeParse({
+      email,
+      password,
+    });
+
+    if (!result.success) {
+      setErrors(getFormErrors(result.error));
+      return;
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+
+    if (errors.email) {
+      setErrors((previous) => ({
+        ...previous,
+        email: undefined,
+      }));
+    }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+
+    if (errors.password) {
+      setErrors((previous) => ({
+        ...previous,
+        password: undefined,
+      }));
+    }
   };
 
   return (
@@ -23,7 +64,8 @@ const LoginPage = () => {
           label="Email"
           type="email"
           value={email}
-          onChange={setEmail}
+          onChange={handleEmailChange}
+          error={errors.email}
         />
 
         <FormField
@@ -32,7 +74,8 @@ const LoginPage = () => {
           label="Password"
           type="password"
           value={password}
-          onChange={setPassword}
+          onChange={handlePasswordChange}
+          error={errors.password}
         />
 
         <button type="submit">Login</button>

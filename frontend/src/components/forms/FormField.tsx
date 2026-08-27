@@ -5,6 +5,7 @@ type FormFieldProps = {
   name: string;
   value: string;
   onChange: (value: string) => void;
+  error?: string;
 };
 
 const FormField = ({
@@ -14,6 +15,7 @@ const FormField = ({
   name,
   value,
   onChange,
+  error,
 }: FormFieldProps) => {
   return (
     <div>
@@ -25,7 +27,10 @@ const FormField = ({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        required
       />
+
+      {error && <p>{error}</p>}
     </div>
   );
 };

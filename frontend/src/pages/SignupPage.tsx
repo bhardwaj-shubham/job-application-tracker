@@ -1,16 +1,70 @@
-import { Link } from "react-router";
-import FormField from "../components/forms/FormField";
 import { useState } from "react";
+import { Link } from "react-router";
+
+import { signupSchema } from "../schemas/auth.ts";
+import { getFormErrors } from "../utils/formErrors.ts";
+
+import FormField from "../components/forms/FormField.tsx";
+
+type SignupErrors = {
+  name?: string;
+  email?: string;
+  password?: string;
+};
 
 const SignupPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [errors, setErrors] = useState<SignupErrors>({});
+
   const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    console.log(name, email, password);
+    const result = signupSchema.safeParse({
+      name,
+      email,
+      password,
+    });
+
+    if (!result.success) {
+      setErrors(getFormErrors(result.error));
+      return;
+    }
+  };
+
+  const handleNameChange = (value: string) => {
+    setName(value);
+
+    if (errors.name) {
+      setErrors((previous) => ({
+        ...previous,
+        name: undefined,
+      }));
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+
+    if (errors.email) {
+      setErrors((previous) => ({
+        ...previous,
+        email: undefined,
+      }));
+    }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+
+    if (errors.password) {
+      setErrors((previous) => ({
+        ...previous,
+        password: undefined,
+      }));
+    }
   };
 
   return (
@@ -23,7 +77,8 @@ const SignupPage = () => {
           name="name"
           label="Name"
           value={name}
-          onChange={setName}
+          onChange={handleNameChange}
+          error={errors.name}
         />
 
         <FormField
@@ -32,7 +87,8 @@ const SignupPage = () => {
           label="Email"
           type="email"
           value={email}
-          onChange={setEmail}
+          onChange={handleEmailChange}
+          error={errors.email}
         />
 
         <FormField
@@ -41,7 +97,8 @@ const SignupPage = () => {
           label="Password"
           type="password"
           value={password}
-          onChange={setPassword}
+          onChange={handlePasswordChange}
+          error={errors.password}
         />
 
         <button type="submit">Signup</button>
