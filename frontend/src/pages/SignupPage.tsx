@@ -5,6 +5,8 @@ import { signupSchema } from "../schemas/auth.ts";
 import { getFormErrors } from "../utils/formErrors.ts";
 
 import FormField from "../components/forms/FormField.tsx";
+import { signup } from "../services/auth/authService.ts";
+import { ApiError } from "../services/api/authClient.ts";
 
 type SignupErrors = {
   name?: string;
@@ -18,8 +20,9 @@ const SignupPage = () => {
   const [password, setPassword] = useState("");
 
   const [errors, setErrors] = useState<SignupErrors>({});
+  const [serverError, setServerError] = useState("");
 
-  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const result = signupSchema.safeParse({
@@ -32,6 +35,17 @@ const SignupPage = () => {
       setErrors(getFormErrors(result.error));
       return;
     }
+
+    try {
+      const response = await signup(result.data);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setServerError(error.message);
+        return;
+      }
+
+      setServerError("Something went wrong. Please try again.");
+    }
   };
 
   const handleNameChange = (value: string) => {
@@ -42,6 +56,10 @@ const SignupPage = () => {
         ...previous,
         name: undefined,
       }));
+    }
+
+    if (serverError) {
+      setServerError("");
     }
   };
 
@@ -54,6 +72,10 @@ const SignupPage = () => {
         email: undefined,
       }));
     }
+
+    if (serverError) {
+      setServerError("");
+    }
   };
 
   const handlePasswordChange = (value: string) => {
@@ -65,11 +87,17 @@ const SignupPage = () => {
         password: undefined,
       }));
     }
+
+    if (serverError) {
+      setServerError("");
+    }
   };
 
   return (
     <main>
       <h1>Sign up</h1>
+
+      {serverError && <p>{serverError}</p>}
 
       <form onSubmit={handleSubmit}>
         <FormField

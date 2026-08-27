@@ -5,6 +5,8 @@ import { loginSchema } from "../schemas/auth";
 import { getFormErrors } from "../utils/formErrors";
 
 import FormField from "../components/forms/FormField";
+import { login } from "../services/auth/authService";
+import { ApiError } from "../services/api/authClient";
 
 type LoginErrors = {
   email?: string;
@@ -16,8 +18,9 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
 
   const [errors, setErrors] = useState<LoginErrors>({});
+  const [serverError, setServerError] = useState("");
 
-  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const result = loginSchema.safeParse({
@@ -28,6 +31,17 @@ const LoginPage = () => {
     if (!result.success) {
       setErrors(getFormErrors(result.error));
       return;
+    }
+
+    try {
+      const response = await login(result.data);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setServerError(error.message);
+        return;
+      }
+
+      setServerError("Something went wrong. Please try again.");
     }
   };
 
@@ -40,6 +54,10 @@ const LoginPage = () => {
         email: undefined,
       }));
     }
+
+    if (serverError) {
+      setServerError("");
+    }
   };
 
   const handlePasswordChange = (value: string) => {
@@ -51,11 +69,17 @@ const LoginPage = () => {
         password: undefined,
       }));
     }
+
+    if (serverError) {
+      setServerError("");
+    }
   };
 
   return (
     <main>
       <h1>Login</h1>
+
+      {serverError && <p>{serverError}</p>}
 
       <form onSubmit={handleSubmit}>
         <FormField
