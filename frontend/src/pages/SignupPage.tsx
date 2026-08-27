@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import { signupSchema } from "../schemas/auth.ts";
 import { getFormErrors } from "../utils/formErrors.ts";
@@ -22,6 +22,8 @@ const SignupPage = () => {
   const [errors, setErrors] = useState<SignupErrors>({});
   const [serverError, setServerError] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -37,7 +39,15 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await signup(result.data);
+      setServerError("");
+
+      await signup(result.data);
+
+      navigate("/login", {
+        state: {
+          message: "Account created successfully. Please log in.",
+        },
+      });
     } catch (error) {
       if (error instanceof ApiError) {
         setServerError(error.message);

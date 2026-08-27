@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 import { loginSchema } from "../schemas/auth";
 import { getFormErrors } from "../utils/formErrors";
 
 import FormField from "../components/forms/FormField";
-import { login } from "../services/auth/authService";
 import { ApiError } from "../services/api/authClient";
+import useAuth from "../hooks/useAuth";
 
 type LoginErrors = {
   email?: string;
@@ -19,6 +19,11 @@ const LoginPage = () => {
 
   const [errors, setErrors] = useState<LoginErrors>({});
   const [serverError, setServerError] = useState("");
+
+  const { login } = useAuth();
+
+  const location = useLocation();
+  const message = location.state?.message;
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,7 +39,9 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await login(result.data);
+      setServerError("");
+
+      await login(result.data);
     } catch (error) {
       if (error instanceof ApiError) {
         setServerError(error.message);
@@ -80,6 +87,8 @@ const LoginPage = () => {
       <h1>Login</h1>
 
       {serverError && <p>{serverError}</p>}
+
+      {message && <p>{message}</p>}
 
       <form onSubmit={handleSubmit}>
         <FormField

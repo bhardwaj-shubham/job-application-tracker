@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router";
+
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -7,6 +8,7 @@ import CreateApplicationPage from "./pages/CreateApplicationPage";
 import ApplicationDetailsPage from "./pages/ApplicationDetailsPage";
 import AppLayout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const App = () => {
   return (
@@ -16,11 +18,13 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
       </Route>
 
-      <Route path="/app" element={<AppLayout />}>
-        <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="applications" element={<ApplicationsPage />} />
-        <Route path="applications/new" element={<CreateApplicationPage />} />
-        <Route path="applications/:id" element={<ApplicationDetailsPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/app" element={<AppLayout />}>
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="applications" element={<ApplicationsPage />} />
+          <Route path="applications/new" element={<CreateApplicationPage />} />
+          <Route path="applications/:id" element={<ApplicationDetailsPage />} />
+        </Route>
       </Route>
     </Routes>
   );
