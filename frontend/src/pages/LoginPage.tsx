@@ -4,9 +4,18 @@ import { Link, useLocation } from "react-router";
 import { loginSchema } from "../schemas/auth";
 import { getFormErrors } from "../utils/formErrors";
 
-import FormField from "../components/forms/FormField";
 import { ApiError } from "../services/api/authClient";
+import FormField from "../components/forms/FormField";
 import useAuth from "../hooks/useAuth";
+
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type LoginErrors = {
   email?: string;
@@ -83,40 +92,63 @@ const LoginPage = () => {
   };
 
   return (
-    <main>
-      <h1>Login</h1>
-
-      {serverError && <p>{serverError}</p>}
+    <main className="w-full max-w-md">
+      <h1 className="text-center text-2xl">Login</h1>
 
       {message && <p>{message}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <FormField
-          id="email"
-          name="email"
-          label="Email"
-          type="email"
-          value={email}
-          onChange={handleEmailChange}
-          error={errors.email}
-        />
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-center">Login to your account</CardTitle>
+          <CardTitle className="text-red-500 text-sm text-center">
+            {serverError && <p>{serverError}</p>}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={handleSubmit}
+            className="w-full min-w-xs flex flex-col gap-4"
+          >
+            <div className="flex flex-col gap-6">
+              <FormField
+                id="email"
+                name="email"
+                label="Email"
+                type="email"
+                value={email}
+                placeholder="m@example.com"
+                onChange={handleEmailChange}
+                error={errors.email}
+                className="grid gap-2"
+              />
 
-        <FormField
-          id="password"
-          name="password"
-          label="Password"
-          type="password"
-          value={password}
-          onChange={handlePasswordChange}
-          error={errors.password}
-        />
+              <FormField
+                id="password"
+                name="password"
+                label="Password"
+                type="password"
+                value={password}
+                onChange={handlePasswordChange}
+                error={errors.password}
+                className=""
+              />
+            </div>
 
-        <button type="submit">Login</button>
-      </form>
+            <CardFooter className="flex-col gap-2">
+              <Button type="submit" className="w-full hover:cursor-pointer">
+                Login
+              </Button>
 
-      <p>
-        Don't have an account? <Link to="/signup">Sign up</Link>
-      </p>
+              <p>
+                Don't have an account?{" "}
+                <Link to="/signup" className="hover:underline">
+                  Sign up
+                </Link>
+              </p>
+            </CardFooter>
+          </form>
+        </CardContent>
+      </Card>
     </main>
   );
 };

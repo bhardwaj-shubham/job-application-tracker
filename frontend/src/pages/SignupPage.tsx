@@ -5,8 +5,16 @@ import { signupSchema } from "../schemas/auth.ts";
 import { getFormErrors } from "../utils/formErrors.ts";
 
 import FormField from "../components/forms/FormField.tsx";
-import { signup } from "../services/auth/authService.ts";
 import { ApiError } from "../services/api/authClient.ts";
+import useAuth from "@/hooks/useAuth.ts";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card.tsx";
+import { Button } from "@/components/ui/button.tsx";
 
 type SignupErrors = {
   name?: string;
@@ -21,6 +29,8 @@ const SignupPage = () => {
 
   const [errors, setErrors] = useState<SignupErrors>({});
   const [serverError, setServerError] = useState("");
+
+  const { signup } = useAuth();
 
   const navigate = useNavigate();
 
@@ -104,47 +114,69 @@ const SignupPage = () => {
   };
 
   return (
-    <main>
-      <h1>Sign up</h1>
+    <main className="w-full max-w-md">
+      <h1 className="text-center text-2xl">Sign up</h1>
 
-      {serverError && <p>{serverError}</p>}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-center">Create a new account</CardTitle>
+          <CardTitle>
+            {serverError && (
+              <p className="text-red-500 text-center text-sm">{serverError}</p>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <FormField
+              id="name"
+              name="name"
+              label="Name"
+              value={name}
+              placeholder="John Doe"
+              onChange={handleNameChange}
+              error={errors.name}
+              className="w-full min-w-xs "
+            />
 
-      <form onSubmit={handleSubmit}>
-        <FormField
-          id="name"
-          name="name"
-          label="Name"
-          value={name}
-          onChange={handleNameChange}
-          error={errors.name}
-        />
+            <FormField
+              id="email"
+              name="email"
+              label="Email"
+              type="email"
+              value={email}
+              placeholder="m@example.com"
+              onChange={handleEmailChange}
+              error={errors.email}
+              className="w-full min-w-xs"
+            />
 
-        <FormField
-          id="email"
-          name="email"
-          label="Email"
-          type="email"
-          value={email}
-          onChange={handleEmailChange}
-          error={errors.email}
-        />
+            <FormField
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              value={password}
+              onChange={handlePasswordChange}
+              error={errors.password}
+              className="w-full min-w-xs"
+            />
 
-        <FormField
-          id="password"
-          name="password"
-          label="Password"
-          type="password"
-          value={password}
-          onChange={handlePasswordChange}
-          error={errors.password}
-        />
+            <CardFooter className="flex-col gap-2">
+              <Button type="submit" className="w-full hover:cursor-pointer">
+                Signup
+              </Button>
 
-        <button type="submit">Signup</button>
-      </form>
-
-      <p>
-        You have an account? <Link to="/login">Login</Link>
-      </p>
+              <p>
+                You have an account?{" "}
+                <Link to="/login" className="hover:underline">
+                  Login
+                </Link>
+              </p>
+            </CardFooter>
+          </form>
+        </CardContent>
+      </Card>
     </main>
   );
 };
