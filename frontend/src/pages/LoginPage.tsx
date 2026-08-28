@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router";
 import { loginSchema } from "../schemas/auth";
 import { getFormErrors } from "../utils/formErrors";
 
-import { ApiError } from "../services/api/authClient";
+import { ApiError } from "../services/api/apiClient";
 import FormField from "../components/forms/FormField";
 import useAuth from "../hooks/useAuth";
 

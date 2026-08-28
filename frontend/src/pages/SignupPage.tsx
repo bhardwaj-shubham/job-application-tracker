@@ -5,8 +5,7 @@ import { signupSchema } from "../schemas/auth.ts";
 import { getFormErrors } from "../utils/formErrors.ts";
 
 import FormField from "../components/forms/FormField.tsx";
-import { ApiError } from "../services/api/authClient.ts";
-import useAuth from "@/hooks/useAuth.ts";
+import { ApiError } from "../services/api/apiClient.ts";
 import {
   Card,
   CardContent,
@@ -15,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import { signup } from "@/services/auth/authService.ts";
 
 type SignupErrors = {
   name?: string;
@@ -29,8 +29,6 @@ const SignupPage = () => {
 
   const [errors, setErrors] = useState<SignupErrors>({});
   const [serverError, setServerError] = useState("");
-
-  const { signup } = useAuth();
 
   const navigate = useNavigate();
 
