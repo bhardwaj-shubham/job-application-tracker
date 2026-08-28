@@ -5,5 +5,8 @@
   "scripts": {
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6"
   }
 }

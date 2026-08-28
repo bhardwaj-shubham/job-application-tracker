@@ -25,14 +25,14 @@ type LoginData = {
 const signup = async (data: SignupData) => {
   return apiClient<User>("/auth/signup", {
     method: "POST",
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
 };
 
 const login = async (data: LoginData) => {
   return apiClient<AuthResponse>("/auth/login", {
     method: "POST",
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
 };
 
@@ -42,11 +42,8 @@ const getCurrentUser = async () => {
 
 const logout = async () => {
   return apiClient<Record<string, never>>("/auth/logout", {
-    method: "POST"
+    method: "POST",
   });
 };
 
-export { signup, login, getCurrentUser, logout }
-
-
-
+export { signup, login, getCurrentUser, logout };

@@ -12,7 +12,12 @@ class ApiError extends Error {
   errors: unknown[];
   code: string;
 
-  constructor(statusCode: number, message: string, errors: unknown[] = [], code = "INTERNAL_ERROR") {
+  constructor(
+    statusCode: number,
+    message: string,
+    errors: unknown[] = [],
+    code = "INTERNAL_ERROR",
+  ) {
     super(message);
     this.name = "ApiError";
     this.statusCode = statusCode;
@@ -30,22 +35,17 @@ const apiClient = async <T>(
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...options.headers
-    }
+      ...options.headers,
+    },
   });
 
   const body = await response.json();
 
   if (!response.ok) {
-    throw new ApiError(
-      body.statusCode,
-      body.message,
-      body.errors,
-      body.code
-    );
+    throw new ApiError(body.statusCode, body.message, body.errors, body.code);
   }
 
   return body;
-}
+};
 
 export { apiClient, ApiError };
