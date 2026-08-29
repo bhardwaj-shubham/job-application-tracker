@@ -24,7 +24,7 @@ type ApplicationPagination = {
 
 type ListApplicationResponse = {
   applications: Application[];
-  paginations: ApplicationPagination;
+  pagination: ApplicationPagination;
 };
 
 const createApplication = async (data: CreateApplicationData) => {
@@ -55,4 +55,9 @@ const listApplications = async (
   return response.data;
 };
 
-export { createApplication, listApplications, type Application };
+export {
+  createApplication,
+  listApplications,
+  type Application,
+  type ApplicationPagination,
+};
