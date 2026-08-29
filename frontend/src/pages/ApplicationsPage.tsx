@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 import {
   listApplications,
@@ -12,11 +12,12 @@ import ApplicationPaginationControls from "@/components/applications/Application
 const ApplicationsPage = () => {
   const [applications, setApplications] = useState<Application[]>([]);
 
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [pagination, setPagination] = useState<ApplicationPagination | null>(
     null,
   );
-  const limit = 10;
+  const limit = 5;
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -29,11 +30,45 @@ const ApplicationsPage = () => {
 
   useEffect(() => {
     const fetchApplications = async () => {
+      const requestedPage = Number(searchParams.get("page"));
+
+      const isValidPage = Number.isInteger(requestedPage) && requestedPage >= 1;
+      const page = isValidPage ? requestedPage : 1;
+
+      if (!isValidPage && searchParams.has("page")) {
+        setSearchParams(
+          (prev) => {
+            prev.set("page", "1");
+            return prev;
+          },
+          {
+            replace: true,
+          },
+        );
+
+        return;
+      }
+
       try {
         setLoading(true);
         setError("");
 
         const response = await listApplications(page, limit);
+
+        const { pagination } = response;
+
+        if (page > pagination.totalPages && pagination.totalPages > 0) {
+          setSearchParams(
+            (prev) => {
+              prev.set("page", String(pagination.totalPages));
+              return prev;
+            },
+            {
+              replace: true,
+            },
+          );
+          return;
+        }
 
         setApplications(response.applications);
         setPagination(response.pagination);
@@ -49,10 +84,19 @@ const ApplicationsPage = () => {
     };
 
     fetchApplications();
-  }, [page]);
+  }, [searchParams, setSearchParams]);
 
   if (loading) {
     return <p>Loading applications...</p>;
+  }
+
+  if (error) {
+    return (
+      <section>
+        <h1 className="text-2xl font-semibold">Applications</h1>
+        <div className="text-red-600">{error}</div>
+      </section>
+    );
   }
 
   return (
@@ -72,8 +116,20 @@ const ApplicationsPage = () => {
           totalPages={pagination.totalPages}
           totalItems={pagination.totalItems}
           limit={pagination.limit}
-          onPrevious={() => setPage((previous) => previous - 1)}
-          onNext={() => setPage((previous) => previous + 1)}
+          onPrevious={() => {
+            setSearchParams((prev) => {
+              const next = new URLSearchParams(prev);
+              next.set("page", String(pagination.currentPage - 1));
+              return next;
+            });
+          }}
+          onNext={() => {
+            setSearchParams((prev) => {
+              const next = new URLSearchParams(prev);
+              next.set("page", String(pagination.currentPage + 1));
+              return next;
+            });
+          }}
         />
       )}
     </section>
