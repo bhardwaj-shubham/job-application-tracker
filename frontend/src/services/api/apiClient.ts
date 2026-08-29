@@ -39,13 +39,18 @@ const apiClient = async <T>(
     },
   });
 
-  const body = await response.json();
+  const responseData = await response.json();
 
   if (!response.ok) {
-    throw new ApiError(body.statusCode, body.message, body.errors, body.code);
+    throw new ApiError(
+      response.status,
+      responseData.message || "Something went wrong.",
+      responseData.errors || [],
+      responseData.code || "INTERNAL_ERROR",
+    );
   }
 
-  return body;
+  return responseData;
 };
 
 export { apiClient, ApiError };

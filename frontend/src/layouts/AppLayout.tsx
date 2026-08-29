@@ -22,7 +22,7 @@ const AppLayout = () => {
       </header>
 
       <div className="flex">
-        <aside className="w-56 border-r p-4">
+        <aside className="w-1/12 md:w-1/5 border-r p-4">
           <nav className="flex flex-col gap-2">
             <Link to="/app/dashboard">Dashboard</Link>
             <Link to="/app/applications">Applications</Link>
