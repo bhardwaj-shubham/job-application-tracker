@@ -101,7 +101,7 @@ const ApplicationsPage = () => {
 
   return (
     <section>
-      <h1 className="text-2xl font-semibold">Applications</h1>
+      <h1 className="text-2xl font-semibold gap-4">Applications</h1>
 
       <div className="flex flex-col gap-4">
         <ApplicationTable
