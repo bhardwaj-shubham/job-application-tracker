@@ -1,16 +1,23 @@
+import type { z } from "zod";
+
 import { apiClient } from "../api/apiClient";
 
-import type { z } from "zod";
-import type { createApplicationSchema } from "../../schemas/application";
+import type {
+  ApplicationStatus,
+  createApplicationSchema,
+  updateApplicationSchema,
+} from "@/schemas/application";
 
 type CreateApplicationData = z.infer<typeof createApplicationSchema>;
+
+type UpdateApplicationData = z.infer<typeof updateApplicationSchema>;
 
 type Application = {
   id: string;
   company: string;
   role: string;
-  jobUrl: string;
-  status: string;
+  jobUrl: string | null;
+  status: ApplicationStatus;
   appliedDate: string;
   jobDescription: string | null;
 };
@@ -55,9 +62,30 @@ const listApplications = async (
   return response.data;
 };
 
+const getApplicationById = async (id: string): Promise<Application> => {
+  const response = await apiClient<Application>(`/applications/${id}`);
+
+  return response.data;
+};
+
+const updateApplication = async (
+  id: string,
+  data: UpdateApplicationData,
+): Promise<Application> => {
+  const response = await apiClient<Application>(`/applications/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+
+  return response.data;
+};
+
 export {
   createApplication,
   listApplications,
+  getApplicationById,
+  updateApplication,
   type Application,
   type ApplicationPagination,
+  type UpdateApplicationData,
 };

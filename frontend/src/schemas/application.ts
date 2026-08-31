@@ -8,6 +8,8 @@ const APPLICATION_STATUS = z.enum([
   "WITHDRAWN",
 ]);
 
+type ApplicationStatus = z.infer<typeof APPLICATION_STATUS>;
+
 const createApplicationSchema = z.object({
   company: z
     .string()
@@ -71,4 +73,9 @@ const updateApplicationSchema = z
     "Please provide at least one field to update",
   );
 
-export { createApplicationSchema, updateApplicationSchema };
+export {
+  APPLICATION_STATUS,
+  type ApplicationStatus,
+  createApplicationSchema,
+  updateApplicationSchema,
+};
