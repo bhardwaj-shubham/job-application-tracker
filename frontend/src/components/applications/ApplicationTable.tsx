@@ -21,10 +21,14 @@ type ApplicationTableProps = {
 };
 
 const features = tableFeatures({});
+type ApplicationTableFeatures = typeof features;
 
-const columnHelper = createColumnHelper<typeof features, Application>();
+const columnHelper = createColumnHelper<
+  ApplicationTableFeatures,
+  Application
+>();
 
-const columns = [
+const columns = columnHelper.columns([
   columnHelper.accessor("company", {
     header: "Company",
   }),
@@ -43,7 +47,7 @@ const columns = [
       return new Date(info.getValue()).toLocaleDateString();
     },
   }),
-];
+]);
 
 const ApplicationTable = ({
   applications,
@@ -57,7 +61,7 @@ const ApplicationTable = ({
   });
 
   return (
-    <div className="overflow-x-auto rounded-md border">
+    <div className="overflow-x-auto rounded-md border my-4">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
