@@ -1,22 +1,28 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 import ApplicationDetails from "@/components/applications/ApplicationDetails";
 import {
+  deleteApplication,
   getApplicationById,
   updateApplication,
   type Application,
   type UpdateApplicationData,
 } from "@/services/applications/applicationService";
 import EditApplicationSheet from "@/components/applications/EditApplicationSheet";
+import DeleteApplicationDialog from "@/components/applications/DeleteApplicationDialog";
+import { toast } from "@/components/ui/toast";
 
 const ApplicationDetailsPage = () => {
   const { id } = useParams();
+
+  const navigate = useNavigate();
 
   const [application, setApplication] = useState<Application | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchApplication = async () => {
@@ -57,6 +63,37 @@ const ApplicationDetailsPage = () => {
     setApplication(updatedApplication);
   };
 
+  const handleDelete = async () => {
+    if (!id) {
+      throw new Error("Application is missing.");
+    }
+
+    try {
+      setDeleting(true);
+
+      await deleteApplication(id);
+
+      navigate("/app/applications", {
+        state: {
+          successMessage: "Application deleted successfully.",
+        },
+      });
+
+      toast.add({
+        title: "Application deleted successfully.",
+        type: "success",
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) {
     return (
       <section>
@@ -91,10 +128,17 @@ const ApplicationDetailsPage = () => {
             View and manage your job application.
           </p>
         </div>
-        <EditApplicationSheet
-          application={application}
-          onSubmit={handleUpdate}
-        />
+        <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row">
+          <EditApplicationSheet
+            application={application}
+            onSubmit={handleUpdate}
+          />
+
+          <DeleteApplicationDialog
+            onConfirm={handleDelete}
+            loading={deleting}
+          />
+        </div>
       </div>
 
       <ApplicationDetails application={application} />

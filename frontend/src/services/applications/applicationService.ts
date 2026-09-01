@@ -80,11 +80,18 @@ const updateApplication = async (
   return response.data;
 };
 
+const deleteApplication = async (id: string): Promise<void> => {
+  await apiClient(`/applications/${id}`, {
+    method: "DELETE",
+  });
+};
+
 export {
   createApplication,
   listApplications,
   getApplicationById,
   updateApplication,
+  deleteApplication,
   type Application,
   type ApplicationPagination,
   type UpdateApplicationData,

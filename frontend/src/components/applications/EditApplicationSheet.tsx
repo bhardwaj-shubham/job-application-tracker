@@ -38,7 +38,7 @@ const EditApplicationSheet = ({
         render={
           <Button
             variant="secondary"
-            className="p-2 w-full md:w-1/10 rounded-lg hover:cursor-pointer border-gray-400 font-medium"
+            className="p-2 w-full md:w-auto rounded-lg hover:cursor-pointer border-gray-400 font-medium"
           >
             <FileTextIcon />
             Edit
