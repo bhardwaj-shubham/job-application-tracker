@@ -12,6 +12,7 @@ import {
 import EditApplicationSheet from "@/components/applications/EditApplicationSheet";
 import DeleteApplicationDialog from "@/components/applications/DeleteApplicationDialog";
 import { toast } from "@/components/ui/toast";
+import DocumentSection from "@/components/documents/DocumentSection";
 
 const ApplicationDetailsPage = () => {
   const { id } = useParams();
@@ -142,6 +143,8 @@ const ApplicationDetailsPage = () => {
       </div>
 
       <ApplicationDetails application={application} />
+
+      <DocumentSection applicationId={application.id} />
     </section>
   );
 };

@@ -30,11 +30,13 @@ const apiClient = async <T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<ApiReponse<T>> => {
+  const isFormData = options.body instanceof FormData;
+
   const response = await fetch(`${APP_BASE_URL}${endpoint}`, {
     ...options,
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...options.headers,
     },
   });

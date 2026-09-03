@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "../ui/button";
 import ApplicationForm from "./ApplicationForm";
-import { FileTextIcon } from "lucide-react";
+import { SquarePenIcon } from "lucide-react";
 
 type EditApplicationSheetProps = {
   application: Application;
@@ -40,7 +40,7 @@ const EditApplicationSheet = ({
             variant="secondary"
             className="p-2 w-full md:w-auto rounded-lg hover:cursor-pointer border-gray-400 font-medium"
           >
-            <FileTextIcon />
+            <SquarePenIcon />
             Edit
           </Button>
         }
