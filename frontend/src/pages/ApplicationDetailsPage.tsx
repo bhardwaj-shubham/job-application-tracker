@@ -13,6 +13,7 @@ import EditApplicationSheet from "@/components/applications/EditApplicationSheet
 import DeleteApplicationDialog from "@/components/applications/DeleteApplicationDialog";
 import { toast } from "@/components/ui/toast";
 import DocumentSection from "@/components/documents/DocumentSection";
+import ResumeAnalysisSection from "@/components/resume-analysis/ResumeAnalysisSection";
 
 const ApplicationDetailsPage = () => {
   const { id } = useParams();
@@ -20,6 +21,7 @@ const ApplicationDetailsPage = () => {
   const navigate = useNavigate();
 
   const [application, setApplication] = useState<Application | null>(null);
+  const [hasResume, setHasResume] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -144,7 +146,15 @@ const ApplicationDetailsPage = () => {
 
       <ApplicationDetails application={application} />
 
-      <DocumentSection applicationId={application.id} />
+      <DocumentSection
+        applicationId={application.id}
+        onResumeChange={setHasResume}
+      />
+
+      <ResumeAnalysisSection
+        applicationId={application.id}
+        hasResume={hasResume}
+      />
     </section>
   );
 };

@@ -9,6 +9,7 @@ import ApplicationDetailsPage from "./pages/ApplicationDetailsPage";
 import AppLayout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import ResumeAnalysisPage from "./pages/ResumeAnalysisPage";
 
 const App = () => {
   return (
@@ -30,6 +31,10 @@ const App = () => {
             <Route
               path="applications/:id"
               element={<ApplicationDetailsPage />}
+            />
+            <Route
+              path="applications/:id/analysis"
+              element={<ResumeAnalysisPage />}
             />
           </Route>
         </Route>

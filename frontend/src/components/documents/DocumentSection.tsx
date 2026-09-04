@@ -18,9 +18,13 @@ import ResumeDocumentCard from "./ResumeDocumentCard";
 
 type DocumentSectionProps = {
   applicationId: string;
+  onResumeChange?: (hasResume: boolean) => void;
 };
 
-const DocumentSection = ({ applicationId }: DocumentSectionProps) => {
+const DocumentSection = ({
+  applicationId,
+  onResumeChange,
+}: DocumentSectionProps) => {
   const [document, setDocument] = useState<ResumeDocument | null>(null);
 
   const [replacing, setReplacing] = useState(false);
@@ -36,7 +40,10 @@ const DocumentSection = ({ applicationId }: DocumentSectionProps) => {
         setError("");
 
         const document = await listResumes(applicationId);
-        setDocument(document[0] ?? null);
+        const resume = document[0] ?? null;
+
+        setDocument(resume);
+        onResumeChange?.(resume !== null);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
@@ -60,6 +67,7 @@ const DocumentSection = ({ applicationId }: DocumentSectionProps) => {
       await deleteResume(applicationId, document.id);
 
       setDocument(null);
+      onResumeChange?.(false);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -103,6 +111,7 @@ const DocumentSection = ({ applicationId }: DocumentSectionProps) => {
               onUploaded={(uploadedResume) => {
                 setDocument(uploadedResume);
                 setReplacing(false);
+                onResumeChange?.(true);
               }}
             />
 
