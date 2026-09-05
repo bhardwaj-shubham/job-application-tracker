@@ -106,10 +106,65 @@ const deleteAplication = async ({ id, userId }) => {
   return applicationRepository.deleteById(id);
 };
 
+const getDashboard = async (userId) => {
+  const [statusCounts, recentApplications] = await Promise.all([
+    applicationRepository.getStatusCounts(userId),
+
+    applicationRepository.findMany({
+      userId,
+      skip: 0,
+      take: 5,
+    }),
+  ]);
+
+  const stats = {
+    total: 0,
+    applied: 0,
+    interviewing: 0,
+    offered: 0,
+    rejected: 0,
+    withdrawn: 0,
+  };
+
+  for (const item of statusCounts) {
+    const count = item._count._all;
+
+    stats.total += count;
+
+    switch (item.status) {
+      case ApplicationStatus.APPLIED:
+        stats.applied = count;
+        break;
+
+      case ApplicationStatus.INTERVIEWING:
+        stats.interviewing = count;
+        break;
+
+      case ApplicationStatus.OFFERED:
+        stats.offered = count;
+        break;
+
+      case ApplicationStatus.REJECTED:
+        stats.rejected = count;
+        break;
+
+      case ApplicationStatus.WITHDRAWN:
+        stats.withdrawn = count;
+        break;
+    }
+  }
+
+  return {
+    stats,
+    recentApplications,
+  };
+};
+
 export {
   createApplication,
   listApplications,
   getApplicationById,
   updateApplication,
   deleteAplication,
+  getDashboard,
 };

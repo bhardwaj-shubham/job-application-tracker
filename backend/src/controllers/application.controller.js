@@ -132,10 +132,19 @@ const deleteApplicationById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, "Application deleted successfully"));
 });
 
+const getDashboard = asyncHandler(async (req, res) => {
+  const dashboard = await applicationService.getDashboard(req.user.id);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, dashboard, "Dashboard fetched successfully"));
+});
+
 export {
   createApplication,
   listAllApplications,
   getApplicationById,
   updateApplicationById,
   deleteApplicationById,
+  getDashboard,
 };

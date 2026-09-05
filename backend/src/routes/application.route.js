@@ -25,6 +25,7 @@ import {
   analyzeResume,
   getResumeAnalysisStatus,
 } from "../controllers/resumeAnalysis.controller.js";
+import { getDashboard } from "../controllers/application.controller.js";
 
 const applicationRouter = express.Router();
 
@@ -40,6 +41,7 @@ applicationRouter.get(
   validate(listApplicationsQuerySchema, "query"),
   listAllApplications,
 );
+applicationRouter.get("/dashboard", getDashboard);
 applicationRouter.get(
   "/:id",
   validate(applicationIdSchema, "params"),
@@ -56,6 +58,7 @@ applicationRouter.delete(
   validate(applicationIdSchema, "params"),
   deleteApplicationById,
 );
+
 applicationRouter.post(
   "/:id/analyze",
   validate(applicationIdSchema, "params"),

@@ -96,6 +96,18 @@ const updateWithStatusHistory = async ({
   return application;
 };
 
+const getStatusCounts = (userId) => {
+  return prisma.application.groupBy({
+    by: ["status"],
+    where: {
+      userId,
+    },
+    _count: {
+      _all: true,
+    },
+  });
+};
+
 export {
   create,
   findById,
@@ -104,4 +116,5 @@ export {
   count,
   deleteById,
   updateWithStatusHistory,
+  getStatusCounts,
 };
