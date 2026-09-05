@@ -49,7 +49,7 @@ redis.call(
 )
 
 -- Keep the bucket around long enough for it to refill.
-local ttl = math.ceil(capacity / refill_rate) + 60_000
+local ttl = math.ceil(capacity / refill_rate) + 60000
 
 redis.call("PEXPIRE", key, ttl)
 
