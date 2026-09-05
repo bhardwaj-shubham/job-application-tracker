@@ -1,13 +1,7 @@
 import { useState } from "react";
 
 import { analyzeResume } from "@/services/resume-analysis/resumeAnalysisService";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import useResumeAnalysis from "@/hooks/useResumeAnalysis";
 import { Link } from "react-router";
@@ -53,34 +47,36 @@ const ResumeAnalysisSection = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Resume Analysis</CardTitle>
-        <CardDescription>
+    <section className="space-y-4">
+      <div>
+        <h2 className="font-semibold">Resume Analysis</h2>
+        <p className="text-sm text-muted-foreground">
           Analyze your resume against this job description.
-        </CardDescription>
-      </CardHeader>
+        </p>
+      </div>
 
-      <CardContent className="space-y-4 ">
-        <Button
-          type="button"
-          onClick={handleAnalyze}
-          disabled={starting || !hasResume || analysisInProgress}
-        >
-          {starting
-            ? "Starting Analysis..."
-            : analysisInProgress
-              ? "Analysis in Progress..."
-              : "Analyze Resume"}
-        </Button>
-
-        {analysis && (
-          <Button variant="outline" className="mx-2">
-            <Link to={`/app/applications/${applicationId}/analysis`}>
-              View Analysis
-            </Link>
+      <div className="space-y-4 ">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            onClick={handleAnalyze}
+            disabled={starting || !hasResume || analysisInProgress}
+          >
+            {starting
+              ? "Starting Analysis..."
+              : analysisInProgress
+                ? "Analysis in Progress..."
+                : "Analyze Resume"}
           </Button>
-        )}
+
+          {analysis && (
+            <Button variant="outline">
+              <Link to={`/app/applications/${applicationId}/analysis`}>
+                View Analysis
+              </Link>
+            </Button>
+          )}
+        </div>
 
         {!hasResume && (
           <p className="text-sm text-muted-foreground">
@@ -93,8 +89,8 @@ const ResumeAnalysisSection = ({
         {statusError && (
           <p className="text-sm text-destructive">{statusError}</p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 };
 

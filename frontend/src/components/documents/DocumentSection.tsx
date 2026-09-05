@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   deleteResume,
@@ -80,15 +73,15 @@ const DocumentSection = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Documents</CardTitle>
-        <CardDescription>
+    <section className="space-y-4">
+      <div>
+        <h2 className="font-semibold">Resume</h2>
+        <p className="text-sm text-muted-foreground">
           Upload and manage your resume for this application.
-        </CardDescription>
-      </CardHeader>
+        </p>
+      </div>
 
-      <CardContent className="space-y-4">
+      <div className="space-y-4 ">
         {loading && (
           <p className="text-sm text-muted-foreground">Loading document...</p>
         )}
@@ -128,11 +121,14 @@ const DocumentSection = ({
         {!loading && !error && !document && (
           <DocumentUpload
             applicationId={applicationId}
-            onUploaded={setDocument}
+            onUploaded={(uploadedResume) => {
+              setDocument(uploadedResume);
+              onResumeChange?.(true);
+            }}
           />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 };
 

@@ -11,9 +11,11 @@ import {
 } from "@/services/applications/applicationService";
 import EditApplicationSheet from "@/components/applications/EditApplicationSheet";
 import DeleteApplicationDialog from "@/components/applications/DeleteApplicationDialog";
-import { toast } from "@/components/ui/toast";
 import DocumentSection from "@/components/documents/DocumentSection";
 import ResumeAnalysisSection from "@/components/resume-analysis/ResumeAnalysisSection";
+import ApplicationWorkspace from "@/components/applications/ApplicationWorkspace";
+import { Separator } from "@/components/ui/separator";
+import NotesSection from "@/components/notes/NotesSection";
 
 const ApplicationDetailsPage = () => {
   const { id } = useParams();
@@ -30,7 +32,7 @@ const ApplicationDetailsPage = () => {
   useEffect(() => {
     const fetchApplication = async () => {
       if (!id) {
-        setError("Application with given id not found.");
+        setError("Application not found.");
         setLoading(false);
         return;
       }
@@ -58,7 +60,9 @@ const ApplicationDetailsPage = () => {
 
   const handleUpdate = async (data: UpdateApplicationData) => {
     if (!id) {
-      throw new Error("Application ID is missing");
+      setError("Application ID is missing");
+      setLoading(false);
+      return;
     }
 
     const updatedApplication = await updateApplication(id, data);
@@ -68,7 +72,9 @@ const ApplicationDetailsPage = () => {
 
   const handleDelete = async () => {
     if (!id) {
-      throw new Error("Application is missing.");
+      setError("Application ID is missing");
+      setLoading(false);
+      return;
     }
 
     try {
@@ -80,11 +86,6 @@ const ApplicationDetailsPage = () => {
         state: {
           successMessage: "Application deleted successfully.",
         },
-      });
-
-      toast.add({
-        title: "Application deleted successfully.",
-        type: "success",
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -146,15 +147,23 @@ const ApplicationDetailsPage = () => {
 
       <ApplicationDetails application={application} />
 
-      <DocumentSection
-        applicationId={application.id}
-        onResumeChange={setHasResume}
-      />
+      <ApplicationWorkspace>
+        <DocumentSection
+          applicationId={application.id}
+          onResumeChange={setHasResume}
+        />
 
-      <ResumeAnalysisSection
-        applicationId={application.id}
-        hasResume={hasResume}
-      />
+        <Separator />
+
+        <ResumeAnalysisSection
+          applicationId={application.id}
+          hasResume={hasResume}
+        />
+
+        <Separator />
+
+        <NotesSection applicationId={application.id} />
+      </ApplicationWorkspace>
     </section>
   );
 };

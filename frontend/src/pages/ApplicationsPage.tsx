@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 import {
   listApplications,
@@ -8,6 +8,7 @@ import {
 } from "@/services/applications/applicationService";
 import ApplicationTable from "@/components/applications/ApplicationTable";
 import ApplicationPaginationControls from "@/components/applications/ApplicationPaginationControls";
+import { toast } from "@/components/ui/toast";
 
 const ApplicationsPage = () => {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -17,16 +18,36 @@ const ApplicationsPage = () => {
   const [pagination, setPagination] = useState<ApplicationPagination | null>(
     null,
   );
-  const limit = 5;
+  const limit = 10;
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleRowClick = (application: Application) => {
     navigate(`/app/applications/${application.id}`);
   };
+
+  useEffect(() => {
+    const state = location.state as {
+      successMessage?: string;
+    };
+
+    if (!state?.successMessage) {
+      return;
+    }
+
+    toast.add({
+      title: state.successMessage,
+      type: "success",
+    });
+
+    navigate(location.pathname + location.search, {
+      replace: true,
+    });
+  }, [location, navigate]);
 
   useEffect(() => {
     const fetchApplications = async () => {
