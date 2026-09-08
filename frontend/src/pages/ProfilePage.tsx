@@ -6,6 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const ProfilePage = () => {
   const { user } = useAuth();
 
+  if (!user) {
+    return null;
+  }
+
   const memberSince = new Date(user.createdAt).toLocaleDateString();
 
   return (
