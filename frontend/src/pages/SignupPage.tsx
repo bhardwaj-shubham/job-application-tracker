@@ -113,7 +113,9 @@ const SignupPage = () => {
 
   return (
     <main className="w-full max-w-md">
-      <h1 className="text-center text-2xl">Sign up</h1>
+      <h1 className="text-center font-semibold text-2xl hover:cursor-pointer">
+        <Link to="/">JobTracker</Link>
+      </h1>
 
       <Card>
         <CardHeader>

@@ -4,13 +4,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import useAuth from "@/hooks/useAuth";
 import { Outlet } from "react-router";
 import AppSidebar from "./AppSidebar";
+import ProfileMenu from "@/components/profile/ProfileMenu";
 
 const AppLayout = () => {
-  const { user, logout } = useAuth();
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -20,11 +18,7 @@ const AppLayout = () => {
           <SidebarTrigger />
 
           <div className="flex items-center gap-4">
-            <span>{user?.name}</span>
-
-            <Button variant="destructive" onClick={logout}>
-              Logout
-            </Button>
+            <ProfileMenu />
           </div>
         </header>
 

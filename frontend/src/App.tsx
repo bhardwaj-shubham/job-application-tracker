@@ -10,18 +10,26 @@ import AppLayout from "./layouts/AppLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ResumeAnalysisPage from "./pages/ResumeAnalysisPage";
+import ProfilePage from "./pages/ProfilePage";
+import GuestRoute from "./layouts/GuestRoute";
+import HomePage from "./pages/HomePage";
 
 const App = () => {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center">
       <Routes>
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+        <Route path="/" element={<HomePage />} />
+
+        <Route element={<GuestRoute />}>
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
         </Route>
 
         <Route element={<ProtectedRoute />}>
           <Route path="/app" element={<AppLayout />}>
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="applications" element={<ApplicationsPage />} />
             <Route

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 
 import { loginSchema } from "../schemas/auth";
 import { getFormErrors } from "../utils/formErrors";
@@ -31,6 +31,7 @@ const LoginPage = () => {
 
   const { login } = useAuth();
 
+  const navigate = useNavigate();
   const location = useLocation();
   const message = location.state?.message;
 
@@ -51,6 +52,8 @@ const LoginPage = () => {
       setServerError("");
 
       await login(result.data);
+
+      navigate("/app/dashboard");
     } catch (error) {
       if (error instanceof ApiError) {
         setServerError(error.message);
@@ -93,7 +96,9 @@ const LoginPage = () => {
 
   return (
     <main className="w-full max-w-md">
-      <h1 className="text-center text-2xl">Login</h1>
+      <h1 className="text-center font-semibold text-2xl hover:cursor-pointer">
+        <Link to="/">JobTracker</Link>
+      </h1>
 
       {message && <p>{message}</p>}
 
