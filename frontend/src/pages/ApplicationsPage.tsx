@@ -9,6 +9,7 @@ import {
 import ApplicationTable from "@/components/applications/ApplicationTable";
 import ApplicationPaginationControls from "@/components/applications/ApplicationPaginationControls";
 import { toast } from "@/components/ui/toast";
+import { Button } from "@/components/ui/button";
 
 const ApplicationsPage = () => {
   const [applications, setApplications] = useState<Application[]>([]);
@@ -122,7 +123,16 @@ const ApplicationsPage = () => {
 
   return (
     <section>
-      <h1 className="text-2xl font-semibold gap-4">Applications</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold ">Applications</h1>
+
+        <Button
+          variant="secondary"
+          onClick={() => navigate("/app/applications/new")}
+        >
+          Create Application
+        </Button>
+      </div>
 
       <div className="flex flex-col gap-4">
         <ApplicationTable

@@ -17,7 +17,10 @@ const signupSchema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
-    .max(128, "Password must not exceed 128 characters"),
+    .max(128, "Password must not exceed 128 characters")
+    .refine((value) => value.trim().length > 0, {
+      message: "Password cannot contain only whitespace",
+    }),
 });
 
 const loginSchema = z.object({
@@ -31,7 +34,10 @@ const loginSchema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
-    .max(128, "Password must not exceed 128 characters"),
+    .max(128, "Password must not exceed 128 characters")
+    .refine((value) => value.trim().length > 0, {
+      message: "Password cannot contain only whitespace",
+    }),
 });
 
 export { signupSchema, loginSchema };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 
 import { loginSchema } from "../schemas/auth";
@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 
 type LoginErrors = {
   email?: string;
@@ -34,6 +35,18 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const message = location.state?.message;
+
+  useEffect(() => {
+    if (message) {
+      toast.add({
+        title: "Account created",
+        description: message,
+        type: "success",
+      });
+
+      navigate("/login", { replace: true, state: null });
+    }
+  }, [message, navigate]);
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();

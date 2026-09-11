@@ -1,19 +1,22 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 
 import { analyzeResume } from "@/services/resume-analysis/resumeAnalysisService";
 
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import useResumeAnalysis from "@/hooks/useResumeAnalysis";
-import { Link } from "react-router";
 
 type ResumeAnalysisSectionProps = {
   applicationId: string;
   hasResume: boolean;
+  hasJobDescription: boolean;
 };
 
 const ResumeAnalysisSection = ({
   applicationId,
   hasResume,
+  hasJobDescription,
 }: ResumeAnalysisSectionProps) => {
   const {
     analysis,
@@ -26,6 +29,23 @@ const ResumeAnalysisSection = ({
 
   const analysisInProgress =
     analysis?.status === "PENDING" || analysis?.status === "PROCESSING";
+  const previousStatus = useRef(analysis?.status);
+
+  useEffect(() => {
+    if (
+      previousStatus.current &&
+      previousStatus.current !== "FAILED" &&
+      analysis?.status === "FAILED"
+    ) {
+      toast.add({
+        title: "Resume analysis failed",
+        description: "Please try again later.",
+        type: "error",
+      });
+    }
+
+    previousStatus.current = analysis?.status;
+  }, [analysis?.status]);
 
   const handleAnalyze = async () => {
     try {
@@ -60,7 +80,9 @@ const ResumeAnalysisSection = ({
           <Button
             type="button"
             onClick={handleAnalyze}
-            disabled={starting || !hasResume || analysisInProgress}
+            disabled={
+              starting || !hasResume || !hasJobDescription || analysisInProgress
+            }
           >
             {starting
               ? "Starting Analysis..."
@@ -81,6 +103,12 @@ const ResumeAnalysisSection = ({
         {!hasResume && (
           <p className="text-sm text-muted-foreground">
             Upload a resume before starting the analysis.
+          </p>
+        )}
+
+        {!hasJobDescription && (
+          <p className="text-sm text-muted-foreground">
+            Add a job description before starting the analysis.
           </p>
         )}
 

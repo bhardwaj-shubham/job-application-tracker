@@ -13,6 +13,7 @@ import ResumeAnalysisPage from "./pages/ResumeAnalysisPage";
 import ProfilePage from "./pages/ProfilePage";
 import GuestRoute from "./layouts/GuestRoute";
 import HomePage from "./pages/HomePage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const App = () => {
   return (
@@ -46,6 +47,8 @@ const App = () => {
             />
           </Route>
         </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
   );

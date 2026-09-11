@@ -23,6 +23,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { useNavigate } from "react-router";
 
 type ApplicationFormValues = {
   company: string;
@@ -81,6 +82,8 @@ const ApplicationForm = ({
   const [errors, setErrors] = useState<ApplicationErrors>({});
   const [serverError, setServerError] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -111,6 +114,12 @@ const ApplicationForm = ({
         appliedDate,
         jobUrl,
         jobDescription,
+      });
+
+      navigate("/app/applications", {
+        state: {
+          message: "Application created.",
+        },
       });
     } catch (error) {
       if (error instanceof Error) {

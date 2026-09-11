@@ -158,6 +158,7 @@ const ApplicationDetailsPage = () => {
         <ResumeAnalysisSection
           applicationId={application.id}
           hasResume={hasResume}
+          hasJobDescription={Boolean(application.jobDescription?.trim())}
         />
 
         <Separator />
