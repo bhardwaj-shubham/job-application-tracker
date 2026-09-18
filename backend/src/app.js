@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import "dotenv/config";
+import env from "./config/env.js";
 import cookieParser from "cookie-parser";
 
 import errorHandlerMiddleware from "./middleware/errorHandler.middleware.js";
@@ -8,13 +8,11 @@ import globalRateLimit from "./middleware/rate-limit/globalRateLimit.middleware.
 import authRouter from "./routes/auth.route.js";
 import applicationRouter from "./routes/application.route.js";
 
-import resumeAnalysisWorker from "./workers/resumeAnalysis.worker.js";
-
 const app = express();
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: env.FRONTEND_URL,
     credentials: true,
   }),
 );
@@ -30,20 +28,15 @@ app.use(globalRateLimit);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/applications", applicationRouter);
 
-console.log("Resume analysis worker initialized");
-
 // Graceful shutdown
-process.on("SIGTERM", async () => {
-  console.log("Shutting down gracefully...");
-  await resumeAnalysisWorker.close();
+const shutdown = (signal) => {
+  console.log(`Received ${signal}, shuttig down...`);
   process.exit(0);
-});
+};
 
-process.on("SIGINT", async () => {
-  console.log("Shutting down gracefully...");
-  await resumeAnalysisWorker.close();
-  process.exit(0);
-});
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+
+process.on("SIGINT", () => shutdown("SIGINT"));
 
 app.use(errorHandlerMiddleware);
 

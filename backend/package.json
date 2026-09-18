@@ -5,8 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon run server.js",
-    "worker": "node src/workers/skillExtraction.worker.js",
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "worker": "node src/workers/resumeAnalysis.worker.js",
     "test": "vitest run",
     "test:watch": "vitest --watch"
   },

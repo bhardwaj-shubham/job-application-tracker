@@ -97,7 +97,6 @@ describe("Auth endpoints", () => {
         .send({ email, password });
 
       expect(res.status).toBe(200);
-      expect(res.body.data.token).toBeDefined();
       expect(res.headers["set-cookie"]).toBeDefined();
     });
 

@@ -125,4 +125,15 @@ worker.on("error", (error) => {
 
 console.log("[resume-analysis-worker] Started");
 
+const shutdown = async (signal) => {
+  console.log(`[resume-analysis-worker] Received ${signal}, shutting down...`);
+
+  await worker.close();
+
+  process.exit(0);
+};
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+
 export default worker;
