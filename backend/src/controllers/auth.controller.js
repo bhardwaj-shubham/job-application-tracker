@@ -76,7 +76,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    sameSite: "strict",
     maxAge: ms(process.env.JWT_EXPIRES_IN || "7d"),
   };
 
