@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
+    "start:prod": "node scripts/start-prod.js",
     "worker": "node src/workers/resumeAnalysis.worker.js",
     "test": "vitest run",
     "test:watch": "vitest --watch"

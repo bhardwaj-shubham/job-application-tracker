@@ -30,7 +30,7 @@ app.use("/api/v1/applications", applicationRouter);
 
 // Graceful shutdown
 const shutdown = (signal) => {
-  console.log(`Received ${signal}, shuttig down...`);
+  console.log(`Received ${signal}, shutting down...`);
   process.exit(0);
 };
 
