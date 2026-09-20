@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router";
+import { Analytics } from "@vercel/analytics/react";
 
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -17,40 +18,44 @@ import NotFoundPage from "./pages/NotFoundPage";
 
 const App = () => {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <Routes>
-        <Route path="/" element={<HomePage />} />
+    <>
+      <div className="flex min-h-svh flex-col items-center justify-center">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
 
-        <Route element={<GuestRoute />}>
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
+          <Route element={<GuestRoute />}>
+            <Route element={<AuthLayout />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+            </Route>
           </Route>
-        </Route>
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/app" element={<AppLayout />}>
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="applications" element={<ApplicationsPage />} />
-            <Route
-              path="applications/new"
-              element={<CreateApplicationPage />}
-            />
-            <Route
-              path="applications/:id"
-              element={<ApplicationDetailsPage />}
-            />
-            <Route
-              path="applications/:id/analysis"
-              element={<ResumeAnalysisPage />}
-            />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/app" element={<AppLayout />}>
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="applications" element={<ApplicationsPage />} />
+              <Route
+                path="applications/new"
+                element={<CreateApplicationPage />}
+              />
+              <Route
+                path="applications/:id"
+                element={<ApplicationDetailsPage />}
+              />
+              <Route
+                path="applications/:id/analysis"
+                element={<ResumeAnalysisPage />}
+              />
+            </Route>
           </Route>
-        </Route>
 
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </div>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </div>
+
+      <Analytics />
+    </>
   );
 };
 
