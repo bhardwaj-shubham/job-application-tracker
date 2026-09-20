@@ -44,6 +44,18 @@ const ResumeAnalysisSection = ({
       });
     }
 
+    if (
+      previousStatus.current &&
+      previousStatus.current !== "COMPLETED" &&
+      analysis?.status === "COMPLETED"
+    ) {
+      toast.add({
+        title: "Resume analysis completed",
+        description: "Your resume analysis is ready.",
+        type: "success",
+      });
+    }
+
     previousStatus.current = analysis?.status;
   }, [analysis?.status]);
 
@@ -91,7 +103,7 @@ const ResumeAnalysisSection = ({
                 : "Analyze Resume"}
           </Button>
 
-          {analysis && (
+          {analysis?.status === "COMPLETED" && (
             <Button variant="outline">
               <Link to={`/app/applications/${applicationId}/analysis`}>
                 View Analysis

@@ -29,11 +29,14 @@ const SignupPage = () => {
 
   const [errors, setErrors] = useState<SignupErrors>({});
   const [serverError, setServerError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isLoading) return;
 
     const result = signupSchema.safeParse({
       name,
@@ -47,6 +50,7 @@ const SignupPage = () => {
     }
 
     try {
+      setIsLoading(true);
       setServerError("");
 
       await signup(result.data);
@@ -63,6 +67,8 @@ const SignupPage = () => {
       }
 
       setServerError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -163,8 +169,12 @@ const SignupPage = () => {
             />
 
             <CardFooter className="flex-col gap-2">
-              <Button type="submit" className="w-full hover:cursor-pointer">
-                Signup
+              <Button
+                type="submit"
+                className="w-full hover:cursor-pointer"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating account ..." : "Signup"}
               </Button>
 
               <p>

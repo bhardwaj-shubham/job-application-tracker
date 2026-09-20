@@ -29,6 +29,7 @@ const LoginPage = () => {
 
   const [errors, setErrors] = useState<LoginErrors>({});
   const [serverError, setServerError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
 
@@ -51,6 +52,8 @@ const LoginPage = () => {
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (isLoading) return;
+
     const result = loginSchema.safeParse({
       email,
       password,
@@ -62,6 +65,7 @@ const LoginPage = () => {
     }
 
     try {
+      setIsLoading(true);
       setServerError("");
 
       await login(result.data);
@@ -74,6 +78,8 @@ const LoginPage = () => {
       }
 
       setServerError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -153,8 +159,12 @@ const LoginPage = () => {
             </div>
 
             <CardFooter className="flex-col gap-2">
-              <Button type="submit" className="w-full hover:cursor-pointer">
-                Login
+              <Button
+                type="submit"
+                className="w-full hover:cursor-pointer"
+                disabled={isLoading}
+              >
+                {isLoading ? "Logging in ..." : "Login"}
               </Button>
 
               <p>
