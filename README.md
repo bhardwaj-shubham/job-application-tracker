@@ -147,6 +147,54 @@ Visit `http://localhost:5173`.
 7. Analysis results are stored in PostgreSQL.
 8. Frontend polls for the analysis status and displays the result.
 
+## Analysis Pipeline
+
+```mermaid
+flowchart TD
+    A[Analysis Job] --> B[Worker]
+    B --> C[Set Analysis to PROCESSING]
+
+    C --> D[Download Resume PDF]
+    D --> E[Extract PDF Text]
+    E --> F[Sanitize Selected PII]
+
+    F --> G[Gemini Token Bucket]
+    G --> H[Gemini API]
+
+    H --> I{Response Received?}
+
+    I -->|Empty / Error| X[Analysis Error]
+    I -->|Valid Response| J[Parse JSON]
+
+    J -->|Invalid JSON| X
+    J -->|Valid JSON| K[Zod Schema Validation]
+
+    K -->|Validation Failed| X
+    K -->|Valid| L[Transform Analysis for DB]
+
+    L --> M[(PostgreSQL)]
+    M --> N[Set Analysis to COMPLETED]
+
+    X --> O{Final Attempt?}
+
+    O -->|No| P[Re-throw Error]
+    P --> Q[BullMQ Retry]
+    Q --> R[Exponential Backoff]
+    R --> B
+
+    O -->|Yes| S[Set Analysis to FAILED]
+    S --> T[Resume Analysis DLQ]
+```
+  1. Worker picks up the BullMQ job and marks the analysis as PROCESSING.
+  2. Worker downloads the resume PDF, extracts its text, and sanitizes selected PII.
+  3. Worker waits for an available token from the Redis-backed Gemini throttle.
+  4. Gemini analyzes the sanitized resume against the job description and returns structured JSON.
+  5. The response is parsed and validated against the Zod analysis schema.
+  6. The validated result is transformed into the database format and stored in PostgreSQL.
+  7. Successful processing marks the analysis as COMPLETED.
+  8. Processing errors are re-thrown to BullMQ for retry with exponential backoff.
+  9. After the final attempt, the analysis is marked FAILED and the failed job is added to the DLQ.
+
 ## Engineering Decisions
 
 ### Async Resume Analysis
