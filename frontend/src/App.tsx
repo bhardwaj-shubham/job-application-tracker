@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -55,6 +56,7 @@ const App = () => {
       </div>
 
       <Analytics />
+      <SpeedInsights />
     </>
   );
 };
