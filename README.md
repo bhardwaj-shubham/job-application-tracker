@@ -19,7 +19,7 @@ Track job applications, manage resumes, and get AI-powered resume analysis to un
 
 A short walkthrough of the main application flow.
 
-**Watch the demo:** <video src="https://github.com/bhardwaj-shubham/job-application-tracker/releases/download/v0.1-demo/Job-Tracker-App-Demo.mp4" controls width="100%"></video>
+**Watch the demo:** [![Job Application Tracker Demo](https://github.com/bhardwaj-shubham/job-application-tracker/releases/download/v0.1-demo/Job-Tracker-Application-Thumbnail.png)](https://www.loom.com/share/209cb2b1c5b745149a6029a0ef2dd45b)
 
 ## Quick Start
 
